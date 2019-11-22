@@ -1,0 +1,17 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:12-alpine
+    volumes:
+      - 'pg:/var/lib/postgresql/data'
+  api:
+    build: .
+    image: xrt/xrt-api:latest
+    env_file: .env
+    links:
+      - postgres
+    depends_on:
+      - postgres
+
+volumes:
+  pg:

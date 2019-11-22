@@ -1,0 +1,15 @@
+/_build/
+/cover/
+/deps/
+/doc/
+/.fetch
+erl_crash.dump
+*.ez
+retro-*.tar
+/priv/static/
+/config/*.secret.exs
+/rel
+Dockerfile-*
+.elixir_ls
+*.local
+.env
