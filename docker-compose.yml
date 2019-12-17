@@ -4,14 +4,10 @@ services:
     image: postgres:12-alpine
     volumes:
       - 'pg:/var/lib/postgresql/data'
-  api:
-    build: .
-    image: xrt/xrt-api:latest
-    env_file: .env
-    links:
-      - postgres
-    depends_on:
-      - postgres
+    environment:
+      POSTGRES_DB: xrt_dev
+    ports:
+      - "5432:5432"
 
 volumes:
   pg:
