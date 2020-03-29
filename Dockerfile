@@ -4,5 +4,7 @@ RUN mix local.rebar --force
 WORKDIR /app
 ADD . /app
 RUN mix deps.get
+RUN mix deps.compile
+RUN mix compile
 CMD mix phx.server
 EXPOSE 4000
