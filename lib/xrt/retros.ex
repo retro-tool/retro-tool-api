@@ -33,6 +33,8 @@ defmodule Xrt.Retros do
     {:ok, next_retro}
   end
 
+  def find_or_create_by_slug(slug, options \\ [])
+
   def find_or_create_by_slug(nil, previous_retro_id: previous_retro_id)
       when is_integer(previous_retro_id) do
     previous_retro = find_retro(previous_retro_id)
@@ -48,7 +50,7 @@ defmodule Xrt.Retros do
     find_or_create_by_slug(slug, previous_retro_id: previous_retro_id)
   end
 
-  def find_or_create_by_slug(slug, options \\ []) do
+  def find_or_create_by_slug(slug, options) do
     slug = slug || UUID.uuid4()
 
     case find_retro(slug) do
