@@ -64,7 +64,8 @@ defmodule Xrt.MixProject do
       {:stream_data, "~> 0.1", only: :test},
       {:distillery, "~> 2.0", runtime: false},
       {:mix_test_watch, "~> 1.0", only: :dev, runtime: false},
-      {:credo, "~> 1.3", only: [:dev, :test], runtime: false}
+      {:credo, "~> 1.3", only: [:dev, :test], runtime: false},
+      {:phoenix_live_dashboard, "~> 0.1"}
     ]
   end
 
