@@ -1,4 +1,8 @@
 defmodule XrtWeb.Schemas.Queries.Retro do
+  @moduledoc """
+  Retro related graphql queries.
+  """
+
   use Absinthe.Schema.Notation
 
   alias XrtWeb.Graphql.Errors

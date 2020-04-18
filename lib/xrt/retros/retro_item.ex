@@ -1,4 +1,8 @@
 defmodule Xrt.Retros.RetroItem do
+  @moduledoc """
+  Items added to a retro.
+  """
+
   use Ecto.Schema
   import Ecto.Changeset
   import EctoEnum

@@ -1,4 +1,8 @@
 defmodule XrtWeb.Schemas.Queries.User do
+  @moduledoc """
+  User related graphql queries.
+  """
+
   use Absinthe.Schema.Notation
 
   alias XrtWeb.Resolvers.Users

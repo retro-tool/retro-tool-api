@@ -1,4 +1,8 @@
 defmodule XrtWeb.Graphql.Context do
+  @moduledoc """
+  Plug to enrich graphql context with session information.
+  """
+
   @behaviour Plug
 
   import Plug.Conn

@@ -1,4 +1,8 @@
 defmodule Xrt.Retros.RetroItemVote do
+  @moduledoc """
+  Votes on retro items.
+  """
+
   use Ecto.Schema
   import Ecto.Changeset
 

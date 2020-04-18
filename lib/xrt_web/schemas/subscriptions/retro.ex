@@ -1,4 +1,8 @@
 defmodule XrtWeb.Schemas.Subscriptions.Retro do
+  @moduledoc """
+  Retro related graphql subscriptions.
+  """
+
   use Absinthe.Schema.Notation
 
   alias XrtWeb.Resolvers.Retros

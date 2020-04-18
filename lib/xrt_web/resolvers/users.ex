@@ -1,4 +1,8 @@
 defmodule XrtWeb.Resolvers.Users do
+  @moduledoc """
+  Resolver functions for fields, queries and mutations related to users.
+  """
+
   alias Xrt.Retros
   alias Xrt.Retros.{Retro, RetroItem, RetroItemVote}
 

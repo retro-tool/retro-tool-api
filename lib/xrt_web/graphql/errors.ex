@@ -1,4 +1,8 @@
 defmodule XrtWeb.Graphql.Errors do
+  @moduledoc """
+  Helpers to handle errors on grapqhl resolvers
+  """
+
   def handle_errors(fun) do
     fn source, args, info ->
       case Absinthe.Resolution.call(fun, source, args, info) do

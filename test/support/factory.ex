@@ -1,4 +1,6 @@
 defmodule Xrt.Factory do
+  @moduledoc false
+
   use ExMachina.Ecto, repo: Xrt.Repo
 
   def retro_factory do

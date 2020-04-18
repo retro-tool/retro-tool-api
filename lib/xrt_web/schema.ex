@@ -1,4 +1,8 @@
 defmodule XrtWeb.Schema do
+  @moduledoc """
+  Main module for the graphql schema.
+  """
+
   use Absinthe.Schema
 
   import_types(XrtWeb.Types.{
