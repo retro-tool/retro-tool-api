@@ -1,4 +1,4 @@
-defmodule XrtWeb.Schema.Errors do
+defmodule XrtWeb.Graphql.Errors do
   def handle_errors(fun) do
     fn source, args, info ->
       case Absinthe.Resolution.call(fun, source, args, info) do

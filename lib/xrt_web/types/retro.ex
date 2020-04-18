@@ -1,4 +1,4 @@
-defmodule XrtWeb.Schema.RetroTypes do
+defmodule XrtWeb.Types.Retro do
   use Absinthe.Schema.Notation
 
   object :retro do
