@@ -35,6 +35,7 @@ defmodule XrtWeb.Schemas.Queries.RetroTest do
             }
           }
           actionItems { title }
+          nextRetro { slug }
         }
       }
     """
@@ -56,7 +57,8 @@ defmodule XrtWeb.Schemas.Queries.RetroTest do
                    "works" => [%{"similarItems" => [%{"title" => nil}], "title" => nil}],
                    "improve" => [],
                    "others" => [],
-                   "actionItems" => []
+                   "actionItems" => [],
+                   "nextRetro" => nil
                  }
                }
              }
@@ -78,11 +80,32 @@ defmodule XrtWeb.Schemas.Queries.RetroTest do
                  "works" => [],
                  "improve" => [],
                  "others" => [],
-                 "actionItems" => []
+                 "actionItems" => [],
+                 "nextRetro" => nil
                }
              }
            }
 
     assert %Retro{slug: ^slug} = Repo.get_by(Retro, slug: slug)
+  end
+
+  test "it returns the next retro when there is one", %{conn: conn} do
+    retro = insert(:retro)
+    %{slug: next_retro_slug} = insert(:retro, previous_retro: retro)
+
+    result =
+      conn
+      |> run(@query, %{slug: retro.slug})
+      |> query_result()
+
+    assert %{
+             "data" => %{
+               "retro" => %{
+                 "nextRetro" => %{
+                   "slug" => ^next_retro_slug
+                 }
+               }
+             }
+           } = result
   end
 end

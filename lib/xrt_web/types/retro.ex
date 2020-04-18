@@ -10,6 +10,10 @@ defmodule XrtWeb.Types.Retro do
       resolve(&XrtWeb.Resolvers.Retros.find_previous_retro/3)
     end
 
+    field :next_retro, :retro do
+      resolve(&XrtWeb.Resolvers.Retros.find_next_retro/3)
+    end
+
     field :works, non_null(list_of(:retro_item)) do
       resolve(fn parent, args, resolution ->
         XrtWeb.Resolvers.Retros.find_retro_items(:works, parent, args, resolution)
