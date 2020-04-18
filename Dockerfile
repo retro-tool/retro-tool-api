@@ -1,4 +1,4 @@
-FROM elixir:1.7-alpine
+FROM elixir:1.10-alpine
 RUN mix local.hex --force
 RUN mix local.rebar --force
 WORKDIR /app

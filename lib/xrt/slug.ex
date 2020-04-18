@@ -17,7 +17,7 @@ defmodule Xrt.Slug do
 
   defp custom_slug_version(text) do
     version = text |> parsed_slug |> Map.get("version")
-    if version != nil, do: version |> Integer.parse |> elem(0), else: nil
+    if version != nil, do: version |> Integer.parse() |> elem(0), else: nil
   end
 
   defp parsed_slug(text) do

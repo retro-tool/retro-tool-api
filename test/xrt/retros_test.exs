@@ -17,19 +17,19 @@ defmodule Xrt.RetrosTest do
     end
 
     property "creates with slug length between 8 and 32" do
-      check all slug <- slug(min_length: 8, max_length: 64) do
+      check all(slug <- slug(min_length: 8, max_length: 64)) do
         assert {:ok, %Retro{slug: slug}} = Retros.create(slug)
       end
     end
 
     property "does not create with slug length smaller than 8" do
-      check all slug <- slug(min_length: 0, max_length: 7) do
+      check all(slug <- slug(min_length: 0, max_length: 7)) do
         assert {:error, _} = Retros.create(slug)
       end
     end
 
     property "does not create with slug length bigger than 32" do
-      check all slug <- slug(min_length: 65, max_length: 256) do
+      check all(slug <- slug(min_length: 65, max_length: 256)) do
         assert {:error, _} = Retros.create(slug)
       end
     end
