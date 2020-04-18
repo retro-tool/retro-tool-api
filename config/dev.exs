@@ -61,7 +61,7 @@ config :phoenix, :plug_init_mode, :runtime
 # Configure your database
 config :retro, Xrt.Repo,
   username: System.get_env("DB_USER") || "postgres",
-  password: System.get_env("DB_PASSWORD") || "",
+  password: System.get_env("DB_PASSWORD") || "postgres",
   database: System.get_env("DB_NAME") || "xrt_dev",
   hostname: System.get_env("DB_HOST") || "localhost",
   pool_size: 10
