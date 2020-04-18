@@ -15,9 +15,6 @@ defmodule XrtWeb.Router do
     plug XrtWeb.Graphql.Context
   end
 
-  pipeline :graphql do
-  end
-
   forward "/api/graphiql", Absinthe.Plug.GraphiQL, schema: XrtWeb.Schema
 
   scope "/api" do

@@ -1,4 +1,4 @@
-defmodule XrtWeb.Schema.UserTypes do
+defmodule XrtWeb.Types.User do
   use Absinthe.Schema.Notation
 
   object :user do
