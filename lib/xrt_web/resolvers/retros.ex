@@ -12,6 +12,10 @@ defmodule XrtWeb.Resolvers.Retros do
     Retros.find_previous_retro(parent)
   end
 
+  def find_next_retro(child, %{}, _resolution) do
+    Retros.find_next_retro(child)
+  end
+
   def add_works_item(_parent, args, %{context: context}) do
     args
     |> Map.put(:type, :works)

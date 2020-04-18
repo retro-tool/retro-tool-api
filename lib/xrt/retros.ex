@@ -16,6 +16,11 @@ defmodule Xrt.Retros do
     {:ok, (retro |> Repo.preload(:previous_retro)).previous_retro}
   end
 
+  def find_next_retro(retro) do
+    next_retro = Repo.get_by(Retro, previous_retro_id: retro.id)
+    {:ok, next_retro}
+  end
+
   def find_or_create_by_slug(nil, previous_retro_id: previous_retro_id)
       when is_integer(previous_retro_id) do
     previous_retro = find_retro(previous_retro_id)
