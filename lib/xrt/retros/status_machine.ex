@@ -1,4 +1,8 @@
 defmodule Xrt.Retros.StatusMachine do
+  @moduledoc """
+  State machine to transition retros through phases.
+  """
+
   alias Xrt.Repo
   alias Xrt.Retros.Retro
 

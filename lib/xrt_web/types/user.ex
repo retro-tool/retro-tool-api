@@ -1,4 +1,8 @@
 defmodule XrtWeb.Types.User do
+  @moduledoc """
+  User related graphql types.
+  """
+
   use Absinthe.Schema.Notation
 
   object :user do

@@ -62,7 +62,8 @@ defmodule Xrt.MixProject do
       {:ex_machina, "~> 2.2"},
       {:stream_data, "~> 0.1", only: :test},
       {:distillery, "~> 2.0", runtime: false},
-      {:mix_test_watch, "~> 1.0", only: :dev, runtime: false}
+      {:mix_test_watch, "~> 1.0", only: :dev, runtime: false},
+      {:credo, "~> 1.3", only: [:dev, :test], runtime: false}
     ]
   end
 

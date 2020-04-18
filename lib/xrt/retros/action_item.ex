@@ -1,4 +1,8 @@
 defmodule Xrt.Retros.ActionItem do
+  @moduledoc """
+  Acton items added to a retro.
+  """
+
   use Ecto.Schema
   import Ecto.Changeset
 

@@ -1,4 +1,8 @@
-defmodule Xrt.Slug do
+defmodule Xrt.Retros.Slug do
+  @moduledoc """
+  Helper functions for retro slugs.
+  """
+
   @version_regex ~r/(?<prefix>.+)-(?<version>\d+)$/
 
   def custom?(text) do

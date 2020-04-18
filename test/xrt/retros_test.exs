@@ -5,7 +5,12 @@ defmodule Xrt.RetrosTest do
   import Xrt.Factory
 
   alias Xrt.Retros
-  alias Xrt.Retros.{Retro, ActionItem, RetroItem}
+
+  alias Xrt.Retros.{
+    ActionItem,
+    Retro,
+    RetroItem
+  }
 
   def slug(min_length: min_length, max_length: max_length) do
     StreamData.string(:alphanumeric, min_length: min_length, max_length: max_length)

@@ -1,4 +1,8 @@
 defmodule Xrt.Retros.Retro do
+  @moduledoc """
+  A retrospective.
+  """
+
   use Ecto.Schema
   import Ecto.Changeset
   import EctoEnum

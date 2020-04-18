@@ -1,6 +1,18 @@
 defmodule Xrt.Retros do
-  alias Xrt.Retros.{Retro, ActionItem, RetroItem, RetroItemVote, StatusMachine}
+  @moduledoc """
+  Bounded context for retros.
+  """
+
   alias Xrt.Repo
+
+  alias Xrt.Retros.{
+    ActionItem,
+    Retro,
+    RetroItem,
+    RetroItemVote,
+    Slug,
+    StatusMachine
+  }
 
   import Ecto.Query, only: [from: 2]
 
@@ -27,8 +39,8 @@ defmodule Xrt.Retros do
     previous_slug = previous_retro.slug
 
     slug =
-      if previous_slug |> Xrt.Slug.custom?() do
-        previous_slug |> Xrt.Slug.next()
+      if Slug.custom?(previous_slug) do
+        Slug.next(previous_slug)
       else
         UUID.uuid4()
       end

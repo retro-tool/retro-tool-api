@@ -1,6 +1,16 @@
 defmodule XrtWeb.Resolvers.Retros do
+  @moduledoc """
+  Resolver functions for fields, queries and mutations related to retros.
+  """
+
   alias Xrt.Retros
-  alias Xrt.Retros.{Retro, RetroItem, RetroItemVote, ActionItem}
+
+  alias Xrt.Retros.{
+    ActionItem,
+    Retro,
+    RetroItem,
+    RetroItemVote
+  }
 
   def find_retro(_parent, options \\ %{}, _resolution) do
     slug = options |> Map.get(:slug)

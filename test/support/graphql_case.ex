@@ -1,4 +1,8 @@
 defmodule XrtWeb.GraphqlCase do
+  @moduledoc """
+  Helpers for graphql related tests
+  """
+
   use ExUnit.CaseTemplate
 
   using do

@@ -1,8 +1,12 @@
 defmodule XrtWeb.Schemas.Mutations.Retro do
+  @moduledoc """
+  Retro related graphql mutations.
+  """
+
   use Absinthe.Schema.Notation
 
-  alias XrtWeb.Resolvers.Retros
   alias XrtWeb.Graphql.Errors
+  alias XrtWeb.Resolvers.Retros
 
   object :retro_mutations do
     @desc "Create a works type item"
