@@ -6,6 +6,8 @@ services:
       - 'pg:/var/lib/postgresql/data'
     environment:
       POSTGRES_DB: xrt_dev
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     ports:
       - "5432:5432"
 

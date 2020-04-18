@@ -12,7 +12,7 @@ config :logger, level: :warn
 # Configure your database
 config :retro, Xrt.Repo,
   username: "postgres",
-  password: "",
+  password: "postgres",
   database: "xrt_test",
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
