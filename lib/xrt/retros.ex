@@ -13,18 +13,20 @@ defmodule Xrt.Retros do
   end
 
   def find_previous_retro(retro) do
-    { :ok, (retro |> Repo.preload(:previous_retro)).previous_retro }
+    {:ok, (retro |> Repo.preload(:previous_retro)).previous_retro}
   end
 
-  def find_or_create_by_slug(nil, previous_retro_id: previous_retro_id) when is_integer(previous_retro_id) do
+  def find_or_create_by_slug(nil, previous_retro_id: previous_retro_id)
+      when is_integer(previous_retro_id) do
     previous_retro = find_retro(previous_retro_id)
     previous_slug = previous_retro.slug
 
-    slug = if previous_slug |> Xrt.Slug.custom? do
-      previous_slug |> Xrt.Slug.next
-    else
-      UUID.uuid4()
-    end
+    slug =
+      if previous_slug |> Xrt.Slug.custom?() do
+        previous_slug |> Xrt.Slug.next()
+      else
+        UUID.uuid4()
+      end
 
     find_or_create_by_slug(slug, previous_retro_id: previous_retro_id)
   end
