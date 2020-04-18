@@ -61,7 +61,8 @@ defmodule Xrt.MixProject do
       {:ecto_enum, "~> 1.1"},
       {:ex_machina, "~> 2.2"},
       {:stream_data, "~> 0.1", only: :test},
-      {:distillery, "~> 2.0", runtime: false}
+      {:distillery, "~> 2.0", runtime: false},
+      {:mix_test_watch, "~> 1.0", only: :dev, runtime: false}
     ]
   end
 
