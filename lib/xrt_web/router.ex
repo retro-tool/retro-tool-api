@@ -22,17 +22,17 @@ defmodule XrtWeb.Router do
     plug :basic_auth, username: "admin", password: System.get_env("ADMIN_PASSWORD")
   end
 
-  scope "/" do
-    pipe_through [:browser, :admins_only]
-
-    live_dashboard "/api/dashboard"
-  end
-
   forward "/api/graphiql", Absinthe.Plug.GraphiQL, schema: XrtWeb.Schema
 
   scope "/api" do
     pipe_through :api
 
     forward "/graph", Absinthe.Plug, schema: XrtWeb.Schema
+  end
+
+  scope "/" do
+    pipe_through [:browser, :admins_only]
+
+    live_dashboard "/api/dashboard"
   end
 end
