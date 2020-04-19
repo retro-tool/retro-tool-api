@@ -65,7 +65,8 @@ defmodule Xrt.MixProject do
       {:distillery, "~> 2.0", runtime: false},
       {:mix_test_watch, "~> 1.0", only: :dev, runtime: false},
       {:credo, "~> 1.3", only: [:dev, :test], runtime: false},
-      {:phoenix_live_dashboard, "~> 0.1"}
+      {:phoenix_live_dashboard, "~> 0.1"},
+      {:basic_auth, "~> 2.2"}
     ]
   end
 

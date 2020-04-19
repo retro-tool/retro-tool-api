@@ -58,6 +58,13 @@ config :phoenix, :stacktrace_depth, 20
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
 
+config :retro,
+  dashboard_auth: [
+    username: "admin",
+    password: "admin",
+    realm: "Dashboard"
+  ]
+
 # Configure your database
 config :retro, Xrt.Repo,
   username: System.get_env("DB_USER") || "postgres",

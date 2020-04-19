@@ -1,7 +1,6 @@
 defmodule XrtWeb.Router do
   use XrtWeb, :router
 
-  import Plug.BasicAuth
   import Phoenix.LiveDashboard.Router
 
   pipeline :browser do
@@ -19,7 +18,7 @@ defmodule XrtWeb.Router do
   end
 
   pipeline :admins_only do
-    plug :basic_auth, username: "admin", password: Application.get_env(:retro, :admin_password)
+    plug BasicAuth, use_config: {:retro, :dashboard_auth}
   end
 
   forward "/api/graphiql", Absinthe.Plug.GraphiQL, schema: XrtWeb.Schema
