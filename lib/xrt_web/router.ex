@@ -19,7 +19,7 @@ defmodule XrtWeb.Router do
   end
 
   pipeline :admins_only do
-    plug :basic_auth, username: "admin", password: System.get_env("ADMIN_PASSWORD")
+    plug :basic_auth, username: "admin", password: Application.get_env(:retro, :admin_password)
   end
 
   forward "/api/graphiql", Absinthe.Plug.GraphiQL, schema: XrtWeb.Schema

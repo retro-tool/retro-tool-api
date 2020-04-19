@@ -27,6 +27,8 @@ config :phoenix, :json_library, Jason
 
 config :retro, XrtWeb.Endpoint, live_view: [signing_salt: System.get_env("SECRET_SALT")]
 
+config :retro, admin_password: System.get_env("ADMIN_PASSWORD")
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"
