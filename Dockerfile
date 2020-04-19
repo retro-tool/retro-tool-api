@@ -12,7 +12,6 @@ RUN mix local.hex --force && \
 
 
 # Create the application build directory
-RUN mkdir /app
 WORKDIR /app
 
 # Copy over all the necessary application files and directories
@@ -35,12 +34,8 @@ ENV LANG=C.UTF-8
 # Install openssl
 RUN apk update && apk add openssl ncurses-libs
 
-# Copy over the build artifact from the previous step and create a non root user
-RUN adduser -h /home/app -D app
-WORKDIR /home/app
+# Copy over the build artifact from the previous step
 COPY --from=builder /app/_build .
-RUN chown -R app: ./prod
-USER app
+COPY entrypoint.sh .
 
-# Run the Phoenix app
-CMD ["./prod/rel/retro/bin/retro", "start"]
+ENTRYPOINT ["sh", "./entrypoint.sh"]
