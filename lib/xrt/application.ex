@@ -7,6 +7,7 @@ defmodule Xrt.Application do
 
   require Logger
 
+  @impl true
   def start(_type, _args) do
     # List all child processes to be supervised
     children = [
@@ -26,11 +27,17 @@ defmodule Xrt.Application do
 
   # Tell Phoenix to update the endpoint configuration
   # whenever the application is updated.
+  @impl true
   def config_change(changed, _new, removed) do
     XrtWeb.Endpoint.config_change(changed, removed)
     :ok
   end
 
+  @spec absinthe_subscriptions(atom) :: %{
+          type: :supervisor,
+          id: Absinthe.Subscription,
+          start: {Absinthe.Subscription, :start_link, [atom]}
+        }
   def absinthe_subscriptions(name) do
     %{
       type: :supervisor,

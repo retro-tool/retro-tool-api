@@ -12,32 +12,51 @@ defmodule XrtWeb.Resolvers.Retros do
     RetroItemVote
   }
 
+  alias XrtWeb.Graphql.Errors
+
+  @typep context :: %{context: %{user_uuid: String.t()}}
+
+  @spec find_retro(any(), %{optional(:slug) => Retro.slug()}, any()) ::
+          {:ok, Retro.t()} | {:error, any()}
   def find_retro(_parent, options \\ %{}, _resolution) do
     slug = options |> Map.get(:slug)
     previous_retro_id = options |> Map.get(:previous_retro_id)
     Retros.find_or_create_by_slug(slug, previous_retro_id: previous_retro_id)
   end
 
+  @spec find_previous_retro(Retro.t(), %{}, any()) :: {:ok, Retro.t() | nil}
   def find_previous_retro(parent, %{}, _resolution) do
-    Retros.find_previous_retro(parent)
+    {:ok, Retros.find_previous_retro(parent)}
   end
 
+  @spec find_next_retro(Retro.t(), map(), any()) :: {:ok, Retro.t() | nil}
   def find_next_retro(child, %{}, _resolution) do
-    Retros.find_next_retro(child)
+    {:ok, Retros.find_next_retro(child)}
   end
 
+  @typep retro_item_creation_args :: %{
+           retro_slug: Retro.slug(),
+           title: String.t()
+         }
+
+  @spec add_works_item(any(), retro_item_creation_args(), context()) ::
+          {:ok, RetroItem.t()} | {:error, any()}
   def add_works_item(_parent, args, %{context: context}) do
     args
     |> Map.put(:type, :works)
     |> create_retro_item(context)
   end
 
+  @spec add_improve_item(any(), retro_item_creation_args(), context()) ::
+          {:ok, RetroItem.t()} | {:error, any()}
   def add_improve_item(_parent, args, %{context: context}) do
     args
     |> Map.put(:type, :improve)
     |> create_retro_item(context)
   end
 
+  @spec add_other_item(any(), retro_item_creation_args(), context()) ::
+          {:ok, RetroItem.t()} | {:error, any()}
   def add_other_item(_parent, args, %{context: context}) do
     args
     |> Map.put(:type, :other)
@@ -45,37 +64,58 @@ defmodule XrtWeb.Resolvers.Retros do
   end
 
   defp create_retro_item(%{retro_slug: slug, title: title, type: type}, %{user_uuid: user_uuid}) do
-    slug
-    |> Retros.find_retro()
-    |> Retros.add_item(%{title: title, type: type, user_uuid: user_uuid})
+    case Retros.find_retro(slug) do
+      nil ->
+        {:error, Errors.error(:not_found, "Retro not found")}
+
+      retro ->
+        Retros.add_item(retro, %{title: title, type: type, user_uuid: user_uuid})
+    end
   end
 
+  @spec add_action_item(any(), retro_item_creation_args(), context()) ::
+          {:ok, ActionItem.t()} | {:error, any()}
   def add_action_item(_parent, %{retro_slug: slug, title: title}, _context) do
-    slug
-    |> Retros.find_retro()
-    |> Retros.add_action_item(%{title: title})
+    case Retros.find_retro(slug) do
+      nil ->
+        {:error, Errors.error(:not_found, "Retro not found")}
+
+      retro ->
+        Retros.add_action_item(retro, %{title: title})
+    end
   end
 
+  @spec combine_items(any(), %{parent_id: RetroItem.id(), child_id: RetroItem.id()}, context()) ::
+          {:ok, RetroItem.t()} | {:error, any()}
   def combine_items(_parent, %{parent_id: parent_id, child_id: child_id}, _context) do
-    Xrt.Retros.set_parent_id(child_id, parent_id)
+    Retros.set_parent_id(child_id, parent_id)
   end
 
+  @spec detach_item(any(), %{id: RetroItem.id()}, context()) ::
+          {:ok, RetroItem.t()} | {:error, any()}
   def detach_item(_parent, %{id: id}, _context) do
-    Xrt.Retros.set_parent_id(id, nil)
+    Retros.set_parent_id(id, nil)
   end
 
+  @spec remove_item(any(), %{id: RetroItem.id()}, context()) ::
+          {:ok, RetroItem.t()} | {:error, any()}
   def remove_item(_parent, %{id: id}, _context) do
-    Xrt.Retros.remove_item(id)
+    Retros.remove_item(id)
   end
 
+  @spec remove_action_item(any(), %{id: ActionItem.id()}, context()) ::
+          {:ok, ActionItem.t()} | {:error, any()}
   def remove_action_item(_parent, %{id: id}, _context) do
     Xrt.Retros.remove_action_item(id)
   end
 
+  @spec find_similar_items(RetroItem.t(), any(), any()) :: {:ok, list(RetroItem.t())}
   def find_similar_items(parent, _args, _resolution) do
     {:ok, Retros.find_similar_items(parent)}
   end
 
+  @spec toggle_completed(any(), %{action_item_id: ActionItem.id()}, any()) ::
+          {:ok, ActionItem.t()} | {:error, any()}
   def toggle_completed(_parent, %{action_item_id: action_item_id}, _resolution) do
     action_item = Xrt.Repo.get(ActionItem, action_item_id)
 
@@ -84,14 +124,17 @@ defmodule XrtWeb.Resolvers.Retros do
     |> Xrt.Repo.update()
   end
 
+  @spec find_retro_items(RetroItem.type(), Retro.t(), any(), any()) :: {:ok, list(RetroItem.t())}
   def find_retro_items(type, parent, _args, _resolution) do
     {:ok, Retros.find_retro_items(parent, type)}
   end
 
+  @spec find_action_items(Retro.t(), any(), any()) :: {:ok, list(ActionItem.t())}
   def find_action_items(parent, _args, _resolution) do
     {:ok, Retros.find_action_items(parent)}
   end
 
+  @spec authorized_title(RetroItem.t(), any(), context()) :: {:ok, String.t() | nil}
   def authorized_title(item, args, resolution) do
     case hidden_item?(item, args, resolution) do
       {:ok, false} -> {:ok, item.title}
@@ -99,6 +142,7 @@ defmodule XrtWeb.Resolvers.Retros do
     end
   end
 
+  @spec hidden_item?(RetroItem.t(), any(), context()) :: {:ok, boolean()}
   def hidden_item?(item, _args, %{context: context}) do
     with %Xrt.Retros.Retro{status: :initial} <- Xrt.Repo.get(Xrt.Retros.Retro, item.retro_id),
          false <- item.user_uuid == context.user_uuid do
@@ -108,20 +152,29 @@ defmodule XrtWeb.Resolvers.Retros do
     end
   end
 
+  @spec votes(RetroItem.t(), any(), any()) :: {:ok, integer()}
   def votes(item, _args, _resolution) do
     {:ok, Retros.vote_count(item)}
   end
 
+  @spec add_vote(any(), %{item_id: RetroItem.id()}, context()) ::
+          {:ok, RetroItem.t()} | {:error, any()}
   def add_vote(_parent, %{item_id: item_id}, %{context: context}) do
     Retros.add_vote(%{id: item_id}, context.user_uuid)
   end
 
+  @spec next_step(any(), %{slug: Retro.slug()}, any()) :: {:ok, Retro.t()} | {:error, any()}
   def next_step(_parent, %{slug: slug}, _) do
     slug
     |> Retros.find_retro()
     |> Retros.transition_to_next_step()
   end
 
+  @spec retro_updated_trigger(
+          %{slug: Retro.slug()}
+          | %{retro_item_id: RetroItem.id()}
+          | %{retro_id: Retro.id()}
+        ) :: String.t()
   def retro_updated_trigger(%{slug: slug}), do: slug
 
   def retro_updated_trigger(%{retro_item_id: retro_item_id}) do
@@ -139,6 +192,8 @@ defmodule XrtWeb.Resolvers.Retros do
     retro.slug
   end
 
+  @spec retro_updated(RetroItemVote.t() | %{retro_id: Retro.id()} | Retro.t(), any(), any()) ::
+          {:ok, Retro.t()}
   def retro_updated(%RetroItemVote{retro_item_id: retro_item_id}, _args, _resolution) do
     %RetroItem{retro_id: retro_id} = Xrt.Repo.get(RetroItem, retro_item_id)
     {:ok, Xrt.Repo.get(Retro, retro_id)}

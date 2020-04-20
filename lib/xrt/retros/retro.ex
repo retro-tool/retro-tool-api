@@ -3,6 +3,17 @@ defmodule Xrt.Retros.Retro do
   A retrospective.
   """
 
+  @type id :: integer()
+  @type slug :: String.t()
+  @type status :: :initial | :review | :actions | :final
+
+  @type t :: %__MODULE__{
+          id: id() | nil,
+          slug: slug() | nil,
+          status: status() | nil,
+          previous_retro_id: id() | nil
+        }
+
   use Ecto.Schema
   import Ecto.Changeset
   import EctoEnum
@@ -16,6 +27,7 @@ defmodule Xrt.Retros.Retro do
     timestamps()
   end
 
+  @spec changeset(t(), map()) :: Ecto.Changeset.t()
   def changeset(struct, params \\ %{}) do
     struct
     |> Ecto.Changeset.cast(params, [:slug, :status, :previous_retro_id])

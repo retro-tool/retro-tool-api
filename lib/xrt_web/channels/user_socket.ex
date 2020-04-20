@@ -18,6 +18,7 @@ defmodule XrtWeb.UserSocket do
   #
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
+  @impl true
   def connect(%{"user_uuid" => user_uuid}, socket, _connect_info) do
     socket =
       Absinthe.Phoenix.Socket.put_options(socket,
@@ -39,5 +40,6 @@ defmodule XrtWeb.UserSocket do
   #     XrtWeb.Endpoint.broadcast("user_socket:#{user.id}", "disconnect", %{})
   #
   # Returning `nil` makes this socket anonymous.
+  @impl true
   def id(_socket), do: nil
 end
