@@ -7,6 +7,22 @@ defmodule Xrt.Retros.RetroItem do
   import Ecto.Changeset
   import EctoEnum
 
+  alias Xrt.Retros.Retro
+
+  @type id :: integer()
+
+  @type type :: :works | :improve | :other
+
+  @type t :: %__MODULE__{
+          id: id() | nil,
+          title: String.t() | nil,
+          type: type() | nil,
+          user_uuid: String.t() | nil,
+          ref: String.t() | nil,
+          parent_retro_item_id: id() | nil,
+          retro_id: Retro.id() | nil
+        }
+
   defenum(TypeEnum, :type, [:works, :improve, :other])
 
   schema "retro_items" do
@@ -14,11 +30,12 @@ defmodule Xrt.Retros.RetroItem do
     field :type, TypeEnum
     field :user_uuid, :string
     field :ref, :string
-    belongs_to :parent_retro_item, Xrt.Retros.RetroItem
-    belongs_to :retro, Xrt.Retros.Retro
+    belongs_to :parent_retro_item, __MODULE__
+    belongs_to :retro, Retro
     timestamps()
   end
 
+  @spec changeset(t(), map()) :: Ecto.Changeset.t()
   def changeset(struct, params \\ %{}) do
     struct
     |> Ecto.Changeset.cast(params, [

@@ -16,6 +16,7 @@ defmodule Xrt.Retros do
 
   import Ecto.Query, only: [from: 2]
 
+  @spec find_retro(Retro.id() | Retro.slug()) :: Retro.t() | nil
   def find_retro(id) when is_integer(id) do
     Retro |> Repo.get(id)
   end
@@ -24,19 +25,21 @@ defmodule Xrt.Retros do
     Repo.get_by(Retro, slug: slug)
   end
 
+  @spec find_previous_retro(Retro.t()) :: Retro.t()
   def find_previous_retro(retro) do
-    {:ok, (retro |> Repo.preload(:previous_retro)).previous_retro}
+    retro |> Repo.preload(:previous_retro) |> Map.get(:previous_retro)
   end
 
+  @spec find_next_retro(Retro.t()) :: Retro.t()
   def find_next_retro(retro) do
-    next_retro = Repo.get_by(Retro, previous_retro_id: retro.id)
-    {:ok, next_retro}
+    Repo.get_by(Retro, previous_retro_id: retro.id)
   end
 
+  @spec find_or_create_by_slug(Retro.slug() | nil, keyword()) ::
+          {:ok, Retro.t()} | {:error, any()}
   def find_or_create_by_slug(slug, options \\ [])
 
-  def find_or_create_by_slug(nil, previous_retro_id: previous_retro_id)
-      when is_integer(previous_retro_id) do
+  def find_or_create_by_slug(nil, previous_retro_id: previous_retro_id) do
     previous_retro = find_retro(previous_retro_id)
     previous_slug = previous_retro.slug
 
@@ -59,6 +62,7 @@ defmodule Xrt.Retros do
     end
   end
 
+  @spec create(Retro.slug(), keyword()) :: {:ok, Retro.t()} | {:error, any()}
   def create(slug, options \\ []) do
     previous_retro_id = options |> Keyword.get(:previous_retro_id)
 
@@ -67,6 +71,7 @@ defmodule Xrt.Retros do
     |> Repo.insert()
   end
 
+  @spec add_item(Retro.t(), map()) :: {:ok, RetroItem.t()} | {:error, any()}
   def add_item(retro, item_attrs) do
     attrs =
       item_attrs
@@ -78,6 +83,7 @@ defmodule Xrt.Retros do
     |> Repo.insert()
   end
 
+  @spec next_item_ref(Retro.t() | nil) :: String.t() | nil
   @starting_ref "00"
   def next_item_ref(nil), do: nil
   def next_item_ref(%Retro{id: nil}), do: nil
@@ -104,6 +110,7 @@ defmodule Xrt.Retros do
     end
   end
 
+  @spec add_action_item(Retro.t(), map()) :: {:ok, ActionItem.t()} | {:error, any()}
   def add_action_item(retro, action_item_attrs) do
     attrs = Map.put(action_item_attrs, :retro_id, retro.id)
 
@@ -112,6 +119,7 @@ defmodule Xrt.Retros do
     |> Repo.insert()
   end
 
+  @spec find_retro_items(Retro.t(), RetroItem.type()) :: list(RetroItem.t())
   def find_retro_items(%Retro{id: retro_id, status: status}, type)
       when status in [:actions, :final] do
     retro_id
@@ -132,16 +140,23 @@ defmodule Xrt.Retros do
       order_by: i.id
   end
 
+  @spec find_action_items(Retro.t()) :: list(ActionItem.t())
   def find_action_items(%{id: retro_id}) do
     query = from i in ActionItem, where: i.retro_id == ^retro_id, order_by: i.id
 
     Repo.all(query)
   end
 
-  def vote_count(%{id: retro_item_id}) do
+  @spec vote_count(RetroItem.t()) :: integer()
+  def vote_count(%RetroItem{id: retro_item_id}) do
     ids = [retro_item_id] ++ similar_ids(retro_item_id)
     query = from v in RetroItemVote, where: v.retro_item_id in ^ids, select: count()
     Repo.one(query)
+  end
+
+  @spec find_similar_items(RetroItem.t()) :: list(RetroItem.t())
+  def find_similar_items(retro_item) do
+    similar_ids(retro_item.id) |> find_retro_items_by_id
   end
 
   defp similar_ids(retro_item_id) do
@@ -149,15 +164,13 @@ defmodule Xrt.Retros do
     Repo.all(query)
   end
 
-  def find_similar_items(retro) do
-    similar_ids(retro.id) |> find_retro_items_by_id
-  end
-
-  def find_retro_items_by_id(ids) do
+  defp find_retro_items_by_id(ids) do
     query = from i in RetroItem, where: i.id in ^ids
     Repo.all(query)
   end
 
+  @spec set_parent_id(RetroItem.id(), RetroItem.id() | nil) ::
+          {:ok, RetroItem.t()} | {:error, any()}
   def set_parent_id(child_id, parent_id) do
     retro_item = Repo.get(RetroItem, child_id)
 
@@ -166,24 +179,30 @@ defmodule Xrt.Retros do
     |> Repo.update()
   end
 
+  @spec remove_item(RetroItem.id()) :: {:ok, RetroItem.t()} | {:error, any()}
   def remove_item(id) do
     Repo.get(RetroItem, id) |> Repo.delete()
   end
 
+  @spec remove_action_item(ActionItem.id()) :: {:ok, ActionItem.t()} | {:error, any()}
   def remove_action_item(id) do
     Repo.get(ActionItem, id) |> Repo.delete()
   end
 
-  def add_vote(%{id: retro_item_id}, user_uuid) do
+  @spec add_vote(RetroItem.t() | %{id: RetroItem.t()}, String.t()) ::
+          {:ok, RetroItemVote.t()} | {:error, any()}
+  def add_vote(retro_item, user_uuid) do
     %RetroItemVote{}
-    |> RetroItemVote.changeset(%{retro_item_id: retro_item_id, user_uuid: user_uuid})
+    |> RetroItemVote.changeset(%{retro_item_id: retro_item.id, user_uuid: user_uuid})
     |> Repo.insert()
   end
 
+  @spec transition_to_next_step(Retro.t()) :: {:ok, Retro.t()} | {:error, any()}
   def transition_to_next_step(retro) do
     StatusMachine.transition_to_next_step(retro)
   end
 
+  @spec votes_left_for(Retro.t(), String.t()) :: integer()
   @max_votes 20
   def votes_left_for(%Retro{id: retro_id}, user_uuid) do
     query =

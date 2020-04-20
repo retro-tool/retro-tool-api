@@ -9,12 +9,14 @@ defmodule Xrt.Release do
 
   @app :retro
 
+  @spec migrate() :: any()
   def migrate do
     for repo <- repos() do
       {:ok, _, _} = Ecto.Migrator.with_repo(repo, &Ecto.Migrator.run(&1, :up, all: true))
     end
   end
 
+  @spec rollback(repo :: module(), String.t()) :: any()
   def rollback(repo, version) do
     {:ok, _, _} = Ecto.Migrator.with_repo(repo, &Ecto.Migrator.run(&1, :down, to: version))
   end

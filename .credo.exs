@@ -162,7 +162,7 @@
         {Credo.Check.Design.DuplicatedCode, false},
         {Credo.Check.Readability.AliasAs, false},
         {Credo.Check.Readability.MultiAlias, false},
-        {Credo.Check.Readability.Specs, false},
+        {Credo.Check.Readability.Specs, []},
         {Credo.Check.Readability.SinglePipe, false},
         {Credo.Check.Readability.WithCustomTaggedTuple, false},
         {Credo.Check.Refactor.ABCSize, false},

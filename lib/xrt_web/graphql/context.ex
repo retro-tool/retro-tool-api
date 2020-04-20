@@ -7,8 +7,10 @@ defmodule XrtWeb.Graphql.Context do
 
   import Plug.Conn
 
+  @impl true
   def init(opts), do: opts
 
+  @impl true
   def call(conn, _) do
     case get_session(conn, :user_uuid) do
       nil ->

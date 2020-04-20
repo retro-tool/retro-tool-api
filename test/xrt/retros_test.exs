@@ -12,7 +12,7 @@ defmodule Xrt.RetrosTest do
     RetroItem
   }
 
-  def slug(min_length: min_length, max_length: max_length) do
+  defp slug(min_length: min_length, max_length: max_length) do
     StreamData.string(:alphanumeric, min_length: min_length, max_length: max_length)
   end
 
@@ -248,17 +248,6 @@ defmodule Xrt.RetrosTest do
       similar_item = insert(:retro_item, parent_retro_item_id: retro_item.id)
       result = Retros.find_similar_items(retro_item) |> Enum.map(fn x -> x.id end)
       expected_result = [similar_item.id]
-
-      assert result == expected_result
-    end
-  end
-
-  describe "find_retro_items_by_id/1" do
-    test "returns retro items with given ids" do
-      retro_item = insert(:retro_item)
-
-      result = Retros.find_retro_items_by_id([retro_item.id]) |> Enum.map(fn x -> x.id end)
-      expected_result = [retro_item.id]
 
       assert result == expected_result
     end

@@ -8,6 +8,7 @@ defmodule XrtWeb.ErrorHelpers do
   @doc """
   Generates tag for inlined form input errors.
   """
+  @spec error_tag(any(), any()) :: any()
   def error_tag(form, field) do
     Enum.map(Keyword.get_values(form.errors, field), fn error ->
       content_tag(:span, translate_error(error), class: "help-block")
@@ -17,6 +18,7 @@ defmodule XrtWeb.ErrorHelpers do
   @doc """
   Translates an error message using gettext.
   """
+  @spec translate_error({any(), any()}) :: String.t()
   def translate_error({msg, opts}) do
     # When using gettext, we typically pass the strings we want
     # to translate as a static argument:
