@@ -3,7 +3,7 @@ import Config
 config :retro, XrtWeb.Endpoint,
   http: [port: 4000],
   secret_key_base: System.get_env("SECRET_KEY_BASE"),
-  check_origin: ["//retrotool.app"]
+  check_origin: false
 
 config :retro, Xrt.Repo,
   username: System.get_env("DB_USER"),
