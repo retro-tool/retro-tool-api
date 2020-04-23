@@ -16,12 +16,19 @@ defmodule XrtWeb.Resolvers.Retros do
 
   @typep context :: %{context: %{user_uuid: String.t()}}
 
-  @spec find_retro(any(), %{optional(:slug) => Retro.slug()}, any()) ::
+  @spec find_retro(
+          any(),
+          %{required(:slug) => Retro.slug() | nil, optional(:previous_retro_id) => Retro.id()},
+          any()
+        ) ::
           {:ok, Retro.t()} | {:error, any()}
-  def find_retro(_parent, options \\ %{}, _resolution) do
-    slug = options |> Map.get(:slug)
-    previous_retro_id = options |> Map.get(:previous_retro_id)
+  def find_retro(_parent, %{slug: slug, previous_retro_id: previous_retro_id}, _resolution)
+      when not is_nil(previous_retro_id) do
     Retros.find_or_create_by_slug(slug, previous_retro_id: previous_retro_id)
+  end
+
+  def find_retro(_parent, %{slug: slug}, _resolution) do
+    Retros.find_or_create_by_slug(slug)
   end
 
   @spec find_previous_retro(Retro.t(), %{}, any()) :: {:ok, Retro.t() | nil}
