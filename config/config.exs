@@ -15,7 +15,8 @@ config :retro, XrtWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "0pGsyh3H8V2YBtkrRn5p5hvffAr5Vt1/uPby4XWc5f8qzlWBLz1QKhaB9LlDf2IS",
   render_errors: [view: XrtWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: Xrt.PubSub, adapter: Phoenix.PubSub.PG2]
+  pubsub: [name: Xrt.PubSub, adapter: Phoenix.PubSub.PG2],
+  live_view: [signing_salt: "SALT"]
 
 # Configures Elixir's Logger
 config :logger, :console,
