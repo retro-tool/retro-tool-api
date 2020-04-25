@@ -1,0 +1,29 @@
+version: 2
+jobs:
+  build:
+    parallelism: 1
+    docker:
+      - image: circleci/elixir:1.10
+        environment:
+          MIX_ENV: test
+          DB_HOST: localhost
+          DB_USER: postgres
+          DB:PASSWORD: postgres
+          DB_NAME: xrt_test
+      - image: circleci/postgres:12-alpine
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: xrt_test
+    working_directory: ~/app
+    steps:
+      - checkout
+      - run: mix local.hex --force
+      - run: mix local.rebar --force
+      - run: mix deps.get
+      - run: mix compile --warnings-as-errors
+      - run: dockerize -wait tcp://localhost:5432 -timeout 1m
+      - run: mix ecto.migrate
+      - run: mix credo
+      - run: MIX_ENV=dev mix dialyzer
+      - run: mix test
