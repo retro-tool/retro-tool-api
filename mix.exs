@@ -69,7 +69,9 @@ defmodule Xrt.MixProject do
       {:telemetry_poller, "~> 0.4"},
       {:telemetry_metrics, "~> 0.4"},
       {:basic_auth, "~> 2.2"},
-      {:dialyxir, "~> 1.0", only: [:dev], runtime: false}
+      {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
+      {:hammer, "~> 6.0"},
+      {:hammer_plug, "~> 2.1"}
     ]
   end
 
