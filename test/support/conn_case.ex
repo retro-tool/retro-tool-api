@@ -36,6 +36,9 @@ defmodule XrtWeb.ConnCase do
       Sandbox.mode(Repo, {:shared, self()})
     end
 
+    # reset rate limit between tests
+    :ets.delete_all_objects(:hammer_ets_buckets)
+
     {:ok, conn: Phoenix.ConnTest.build_conn()}
   end
 end
