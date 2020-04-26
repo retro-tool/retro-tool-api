@@ -32,6 +32,6 @@ defmodule XrtWeb.Router do
   scope "/" do
     pipe_through [:browser, :admins_only]
 
-    live_dashboard "/api/dashboard"
+    live_dashboard "/api/dashboard", metrics: XrtWeb.Telemetry
   end
 end
