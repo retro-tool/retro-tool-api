@@ -13,7 +13,7 @@ defmodule Xrt.Application do
     children = [
       # Start the Ecto repository
       Xrt.Repo,
-      XrtWeb.Telemetry,
+      XrtWeb.Monitoring.Dashboard,
       # Start the endpoint when the application starts
       XrtWeb.Endpoint,
       # Start the absinthe subsctiption server when the application starts

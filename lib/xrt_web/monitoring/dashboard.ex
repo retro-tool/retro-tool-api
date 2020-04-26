@@ -1,4 +1,4 @@
-defmodule XrtWeb.Telemetry do
+defmodule XrtWeb.Monitoring.Dashboard do
   @moduledoc """
   Telemetry setup for the phoenix live dashboard.
   """
@@ -27,11 +27,17 @@ defmodule XrtWeb.Telemetry do
       summary("vm.total_run_queue_lengths.cpu"),
       summary("vm.total_run_queue_lengths.io"),
       # Absinthe metrics
-      summary("absinthe.execute.operation.stop.duration", unit: {:native, :millisecond})
+      summary("absinthe.execute.operation.stop.duration", unit: {:native, :millisecond}),
+      # Domain metrics
+      last_value("retro.retro.count"),
+      last_value("retro.retro_item.count")
     ]
   end
 
   defp periodic_measurements do
-    []
+    [
+      {Xrt.Monitoring.Measurements, :retro_count, []},
+      {Xrt.Monitoring.Measurements, :retro_items_count, []}
+    ]
   end
 end
