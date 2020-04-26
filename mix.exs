@@ -66,6 +66,8 @@ defmodule Xrt.MixProject do
       {:mix_test_watch, "~> 1.0", only: :dev, runtime: false},
       {:credo, "~> 1.3", only: [:dev, :test], runtime: false},
       {:phoenix_live_dashboard, "~> 0.2"},
+      {:telemetry_poller, "~> 0.4"},
+      {:telemetry_metrics, "~> 0.4"},
       {:basic_auth, "~> 2.2"},
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false}
     ]
