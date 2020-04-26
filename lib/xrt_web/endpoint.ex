@@ -8,6 +8,10 @@ defmodule XrtWeb.Endpoint do
 
   socket "/live", Phoenix.LiveView.Socket
 
+  plug Hammer.Plug,
+    rate_limit: {"api:request", 10_000, 10},
+    by: :ip
+
   # Serve at "/" the static files from "priv/static" directory.
   #
   # You should set gzip to true if you are running phx.digest
