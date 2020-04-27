@@ -16,6 +16,11 @@ defmodule Xrt.Retros do
 
   import Ecto.Query, only: [from: 2]
 
+  @spec find_retro(Retro.id() | Retro.slug() | nil) :: Retro.t() | nil
+  def find_retro(nil) do
+    nil
+  end
+
   @spec find_retro(Retro.id() | Retro.slug()) :: Retro.t() | nil
   def find_retro(id) when is_integer(id) do
     Retro |> Repo.get(id)
@@ -39,18 +44,20 @@ defmodule Xrt.Retros do
           {:ok, Retro.t()} | {:error, any()}
   def find_or_create_by_slug(slug, options \\ [])
 
-  def find_or_create_by_slug(nil, previous_retro_id: previous_retro_id) do
-    previous_retro = find_retro(previous_retro_id)
-    previous_slug = previous_retro.slug
-
+  def find_or_create_by_slug(nil, options) do
     slug =
-      if Slug.custom?(previous_slug) do
-        Slug.next(previous_slug)
-      else
-        UUID.uuid4()
+      options
+      |> Keyword.get(:previous_retro_id)
+      |> find_retro()
+      |> case do
+        nil ->
+          UUID.uuid4()
+
+        %Retro{slug: previous_slug} ->
+          next_slug(previous_slug)
       end
 
-    find_or_create_by_slug(slug, previous_retro_id: previous_retro_id)
+    find_or_create_by_slug(slug, options)
   end
 
   def find_or_create_by_slug(slug, options) do
@@ -62,12 +69,21 @@ defmodule Xrt.Retros do
     end
   end
 
+  defp next_slug(previous_slug) do
+    if Slug.custom?(previous_slug) do
+      Slug.next(previous_slug)
+    else
+      UUID.uuid4()
+    end
+  end
+
   @spec create(Retro.slug(), keyword()) :: {:ok, Retro.t()} | {:error, any()}
   def create(slug, options \\ []) do
     previous_retro_id = options |> Keyword.get(:previous_retro_id)
+    password = options |> Keyword.get(:password)
 
     %Retro{}
-    |> Retro.changeset(%{slug: slug, previous_retro_id: previous_retro_id})
+    |> Retro.changeset(%{slug: slug, previous_retro_id: previous_retro_id, password: password})
     |> Repo.insert()
   end
 
