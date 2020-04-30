@@ -55,6 +55,23 @@ defmodule XrtWeb.Resolvers.Retros do
     result
   end
 
+  @spec update_retro(any(), %{slug: Retro.slug(), input: %{password: String.t()}}, any()) ::
+          {:ok, Retro.t()} | {:error, any()}
+  def update_retro(_parent, %{input: input} = args, _resolution) do
+    {password, args} = Map.pop(args, :password, nil)
+
+    args
+    |> do_find_retro()
+    |> check_password(password)
+    |> case do
+      {:ok, %Retro{} = retro} ->
+        Retros.update(retro, input)
+
+      result ->
+        result
+    end
+  end
+
   @spec find_previous_retro(Retro.t(), %{}, any()) :: {:ok, Retro.t() | nil}
   def find_previous_retro(parent, %{}, _resolution) do
     {:ok, Retros.find_previous_retro(parent)}

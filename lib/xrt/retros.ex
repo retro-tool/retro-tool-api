@@ -99,6 +99,13 @@ defmodule Xrt.Retros do
     |> Repo.insert()
   end
 
+  @spec update(Retro.t(), map()) :: {:ok, Retro.t()} | {:error, any()}
+  def update(retro, input) do
+    retro
+    |> Retro.update_changeset(input)
+    |> Repo.update()
+  end
+
   @spec add_item(Retro.t(), map()) :: {:ok, RetroItem.t()} | {:error, any()}
   def add_item(retro, item_attrs) do
     attrs =

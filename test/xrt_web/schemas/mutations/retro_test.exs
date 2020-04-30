@@ -6,10 +6,100 @@ defmodule XrtWeb.Schemas.Mutations.RetroTest do
 
   alias Xrt.Repo
   alias Xrt.Retros
-  alias Xrt.Retros.{ActionItem, RetroItem}
+  alias Xrt.Retros.{ActionItem, Retro, RetroItem}
 
   setup do
     %{conn: build_conn() |> init_test_session(%{})}
+  end
+
+  describe "updateRetro" do
+    @query """
+    mutation updateRetro($slug: String!, $input: UpdateRetroInput!) {
+      updateRetro(slug: $slug, input: $input) {
+        slug
+      }
+    }
+    """
+
+    test "allows to set a password for a retro without password", %{conn: conn} do
+      retro = insert(:retro)
+      new_password = "new-password"
+
+      result =
+        conn
+        |> run(@query, %{slug: retro.slug, input: %{password: new_password}})
+        |> query_result()
+
+      assert result == %{
+               "data" => %{
+                 "updateRetro" => %{
+                   "slug" => retro.slug
+                 }
+               }
+             }
+
+      password_hash = Retro.encrypt_password(new_password)
+      assert %{password_hash: ^password_hash} = Repo.get(Retro, retro.id)
+    end
+
+    @query_with_password """
+    mutation updateRetro($slug: String!, $password: String!, $input: UpdateRetroInput!) {
+      updateRetro(slug: $slug, password: $password input: $input) {
+        slug
+      }
+    }
+    """
+
+    test "allows to change password with correct password", %{conn: conn} do
+      retro = insert(:retro, password_hash: Retro.encrypt_password("old-password"))
+      new_password = "new-password"
+
+      result =
+        conn
+        |> run(@query_with_password, %{
+          slug: retro.slug,
+          password: "old-password",
+          input: %{password: new_password}
+        })
+        |> query_result()
+
+      assert result == %{
+               "data" => %{
+                 "updateRetro" => %{
+                   "slug" => retro.slug
+                 }
+               }
+             }
+
+      password_hash = Retro.encrypt_password(new_password)
+      assert %{password_hash: ^password_hash} = Repo.get(Retro, retro.id)
+    end
+
+    test "returns unauthorized error with wrong password", %{conn: conn} do
+      retro = insert(:retro, password_hash: Retro.encrypt_password("old-password"))
+      new_password = "new-password"
+
+      result =
+        conn
+        |> run(@query_with_password, %{
+          slug: retro.slug,
+          password: "wrong-password",
+          input: %{password: new_password}
+        })
+        |> query_result()
+
+      assert %{
+               "data" => %{"updateRetro" => nil},
+               "errors" => [
+                 %{
+                   "extensions" => %{"code" => "UNAUTHORIZED", "context" => []},
+                   "locations" => _,
+                   "message" => "This retro is protected by a password",
+                   "path" => ["updateRetro"]
+                 }
+               ]
+             } = result
+    end
   end
 
   describe "createWorksItem" do

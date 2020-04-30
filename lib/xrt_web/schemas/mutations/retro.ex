@@ -9,6 +9,15 @@ defmodule XrtWeb.Schemas.Mutations.Retro do
   alias XrtWeb.Resolvers.Retros
 
   object :retro_mutations do
+    @desc "Update a retro"
+    field :update_retro, type: :retro do
+      arg(:slug, non_null(:string))
+      arg(:password, :string)
+      arg(:input, non_null(:update_retro_input))
+
+      resolve(Errors.handle_errors(&Retros.update_retro/3))
+    end
+
     @desc "Create a works type item"
     field :create_works_item, type: :retro_item do
       arg(:retro_slug, non_null(:string))
