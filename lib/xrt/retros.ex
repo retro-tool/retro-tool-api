@@ -21,13 +21,25 @@ defmodule Xrt.Retros do
     nil
   end
 
-  @spec find_retro(Retro.id() | Retro.slug()) :: Retro.t() | nil
   def find_retro(id) when is_integer(id) do
     Retro |> Repo.get(id)
   end
 
   def find_retro(slug) do
     Repo.get_by(Retro, slug: slug)
+  end
+
+  @spec correct_password?(Retro.t(), String.t()) :: boolean()
+  def correct_password?(%Retro{password_hash: nil}, _password) do
+    true
+  end
+
+  def correct_password?(%Retro{password_hash: _password_hash}, nil) do
+    false
+  end
+
+  def correct_password?(%Retro{password_hash: password_hash}, password) do
+    password_hash == Retro.encrypt_password(password)
   end
 
   @spec find_previous_retro(Retro.t()) :: Retro.t()
