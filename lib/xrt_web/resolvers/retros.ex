@@ -18,17 +18,41 @@ defmodule XrtWeb.Resolvers.Retros do
 
   @spec find_retro(
           any(),
-          %{required(:slug) => Retro.slug() | nil, optional(:previous_retro_id) => Retro.id()},
+          %{
+            required(:slug) => Retro.slug() | nil,
+            optional(:previous_retro_id) => Retro.id(),
+            optional(:password) => String.t()
+          },
           any()
         ) ::
           {:ok, Retro.t()} | {:error, any()}
-  def find_retro(_parent, %{slug: slug, previous_retro_id: previous_retro_id}, _resolution)
-      when not is_nil(previous_retro_id) do
+  def find_retro(_parent, args, _resolution) do
+    {password, args} = Map.pop(args, :password, nil)
+
+    args
+    |> do_find_retro()
+    |> check_password(password)
+  end
+
+  defp do_find_retro(%{slug: slug, previous_retro_id: previous_retro_id})
+       when not is_nil(previous_retro_id) do
     Retros.find_or_create_by_slug(slug, previous_retro_id: previous_retro_id)
   end
 
-  def find_retro(_parent, %{slug: slug}, _resolution) do
+  defp do_find_retro(%{slug: slug}) do
     Retros.find_or_create_by_slug(slug)
+  end
+
+  defp check_password({:ok, retro}, password) do
+    if Retros.correct_password?(retro, password) do
+      {:ok, retro}
+    else
+      {:error, Errors.error(:unauthorized, "This retro is protected by a password")}
+    end
+  end
+
+  defp check_password(result, _) do
+    result
   end
 
   @spec find_previous_retro(Retro.t(), %{}, any()) :: {:ok, Retro.t() | nil}

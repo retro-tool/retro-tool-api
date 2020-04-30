@@ -13,8 +13,8 @@ defmodule XrtWeb.Schemas.Queries.RetroTest do
 
   describe "retro" do
     @query """
-      query getRetro($slug: String, $previousRetroId: Int) {
-        retro(slug: $slug, previousRetroId: $previousRetroId) {
+      query getRetro($slug: String) {
+        retro(slug: $slug) {
           slug
           works {
             title
@@ -35,8 +35,6 @@ defmodule XrtWeb.Schemas.Queries.RetroTest do
             }
           }
           actionItems { title }
-          nextRetro { slug }
-          previousRetro { slug }
         }
       }
     """
@@ -58,9 +56,7 @@ defmodule XrtWeb.Schemas.Queries.RetroTest do
                    "works" => [%{"similarItems" => [%{"title" => nil}], "title" => nil}],
                    "improve" => [],
                    "others" => [],
-                   "actionItems" => [],
-                   "nextRetro" => nil,
-                   "previousRetro" => nil
+                   "actionItems" => []
                  }
                }
              }
@@ -73,6 +69,153 @@ defmodule XrtWeb.Schemas.Queries.RetroTest do
         |> query_result()
 
       assert slug != nil
+    end
+
+    test "it creates the retro if it doesn't exist", %{conn: conn} do
+      slug = "custom-slug"
+
+      result =
+        conn
+        |> run(@query, %{slug: slug})
+        |> query_result()
+
+      assert result == %{
+               "data" => %{
+                 "retro" => %{
+                   "slug" => slug,
+                   "works" => [],
+                   "improve" => [],
+                   "others" => [],
+                   "actionItems" => []
+                 }
+               }
+             }
+
+      assert %Retro{slug: ^slug} = Repo.get_by(Retro, slug: slug)
+    end
+  end
+
+  describe "retro with password" do
+    @query """
+      query getRetro($slug: String, $password: String) {
+        retro(slug: $slug, password: $password) {
+          slug
+        }
+      }
+    """
+
+    @query_without_password """
+      query getRetro($slug: String) {
+        retro(slug: $slug) {
+          slug
+        }
+      }
+    """
+
+    test "it returns the retro with the correct password", %{conn: conn} do
+      retro = insert(:retro, password_hash: Retro.encrypt_password("super-secure-password"))
+
+      result =
+        conn
+        |> run(@query, %{slug: retro.slug, password: "super-secure-password"})
+        |> query_result()
+
+      assert result == %{
+               "data" => %{
+                 "retro" => %{
+                   "slug" => retro.slug
+                 }
+               }
+             }
+    end
+
+    test "it returns an unauthorized error with the wrong password", %{conn: conn} do
+      retro = insert(:retro, password_hash: Retro.encrypt_password("super-secure-password"))
+
+      result =
+        conn
+        |> run(@query, %{slug: retro.slug, password: "wrong-password"})
+        |> query_result()
+
+      assert %{
+               "data" => %{"retro" => nil},
+               "errors" => [
+                 %{
+                   "extensions" => %{"code" => "UNAUTHORIZED", "context" => []},
+                   "locations" => _,
+                   "message" => "This retro is protected by a password",
+                   "path" => ["retro"]
+                 }
+               ]
+             } = result
+    end
+
+    test "it returns an unauthorized error with an empty password", %{conn: conn} do
+      retro = insert(:retro, password_hash: Retro.encrypt_password("super-secure-password"))
+
+      result =
+        conn
+        |> run(@query_without_password, %{slug: retro.slug})
+        |> query_result()
+
+      assert %{
+               "data" => %{"retro" => nil},
+               "errors" => [
+                 %{
+                   "extensions" => %{"code" => "UNAUTHORIZED", "context" => []},
+                   "locations" => _,
+                   "message" => "This retro is protected by a password",
+                   "path" => ["retro"]
+                 }
+               ]
+             } = result
+    end
+  end
+
+  describe "retro.previousRetro" do
+    @query """
+      query getRetro($slug: String, $previousRetroId: Int) {
+        retro(slug: $slug, previousRetroId: $previousRetroId) {
+          previousRetro { slug }
+        }
+      }
+    """
+
+    test "it returns the previous retro when there is one", %{conn: conn} do
+      previous_retro = insert(:retro)
+      retro = insert(:retro, previous_retro: previous_retro)
+
+      result =
+        conn
+        |> run(@query, %{slug: retro.slug})
+        |> query_result()
+
+      assert %{
+               "data" => %{
+                 "retro" => %{
+                   "previousRetro" => %{
+                     "slug" => previous_retro.slug
+                   }
+                 }
+               }
+             } == result
+    end
+
+    test "it returns null when there's no previous retro retro", %{conn: conn} do
+      retro = insert(:retro)
+
+      result =
+        conn
+        |> run(@query, %{slug: retro.slug})
+        |> query_result()
+
+      assert %{
+               "data" => %{
+                 "retro" => %{
+                   "previousRetro" => nil
+                 }
+               }
+             } == result
     end
 
     test "it creates the retro with the previous_retro set if the id is passed", %{conn: conn} do
@@ -95,31 +238,17 @@ defmodule XrtWeb.Schemas.Queries.RetroTest do
                }
              } = result
     end
+  end
 
-    test "it creates the retro if it doesn't exist", %{conn: conn} do
-      slug = "custom-slug"
+  describe "retro.nextRetro" do
+    @query """
+      query getRetro($slug: String) {
+        retro(slug: $slug) {
+          nextRetro { slug }
+        }
+      }
 
-      result =
-        conn
-        |> run(@query, %{slug: slug})
-        |> query_result()
-
-      assert result == %{
-               "data" => %{
-                 "retro" => %{
-                   "slug" => slug,
-                   "works" => [],
-                   "improve" => [],
-                   "others" => [],
-                   "actionItems" => [],
-                   "nextRetro" => nil,
-                   "previousRetro" => nil
-                 }
-               }
-             }
-
-      assert %Retro{slug: ^slug} = Repo.get_by(Retro, slug: slug)
-    end
+    """
 
     test "it returns the next retro when there is one", %{conn: conn} do
       retro = insert(:retro)
@@ -136,6 +265,23 @@ defmodule XrtWeb.Schemas.Queries.RetroTest do
                    "nextRetro" => %{
                      "slug" => ^next_retro_slug
                    }
+                 }
+               }
+             } = result
+    end
+
+    test "it returns null when there's no next retro", %{conn: conn} do
+      retro = insert(:retro)
+
+      result =
+        conn
+        |> run(@query, %{slug: retro.slug})
+        |> query_result()
+
+      assert %{
+               "data" => %{
+                 "retro" => %{
+                   "nextRetro" => nil
                  }
                }
              } = result

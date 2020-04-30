@@ -13,6 +13,7 @@ defmodule XrtWeb.Schemas.Queries.Retro do
     field :retro, :retro do
       arg(:slug, :string)
       arg(:previous_retro_id, :integer)
+      arg(:password, :string)
 
       resolve(Errors.handle_errors(&Retros.find_retro/3))
     end
