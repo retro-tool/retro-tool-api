@@ -40,7 +40,14 @@ defmodule Xrt.Retros.Retro do
     |> Changeset.validate_required([:slug])
     |> Changeset.unique_constraint(:slug)
     |> Changeset.validate_length(:slug, min: 8, max: 64)
-    |> change_encrypt_password()
+    |> changeset_encrypt_password()
+  end
+
+  @spec update_changeset(t(), map()) :: Ecto.Changeset.t()
+  def update_changeset(struct, params) do
+    struct
+    |> Changeset.cast(params, [:password, :password_hash])
+    |> changeset_encrypt_password()
   end
 
   @spec encrypt_password(String.t()) :: binary()
@@ -48,14 +55,14 @@ defmodule Xrt.Retros.Retro do
     :crypto.hash(:sha256, password <> "SALT")
   end
 
-  defp change_encrypt_password(%Ecto.Changeset{valid?: false} = changeset), do: changeset
+  defp changeset_encrypt_password(%Ecto.Changeset{valid?: false} = changeset), do: changeset
 
-  defp change_encrypt_password(%Ecto.Changeset{changes: %{password: password}} = changeset)
+  defp changeset_encrypt_password(%Ecto.Changeset{changes: %{password: password}} = changeset)
        when not is_nil(password) do
     encrypted_password = encrypt_password(password)
 
     Changeset.put_change(changeset, :password_hash, encrypted_password)
   end
 
-  defp change_encrypt_password(changeset), do: changeset
+  defp changeset_encrypt_password(changeset), do: changeset
 end
