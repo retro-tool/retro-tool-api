@@ -213,4 +213,9 @@ defmodule Xrt.Retros do
 
     @max_votes - Repo.one(query)
   end
+
+  @spec count() :: integer()
+  def count do
+    Repo.aggregate(Retro, :count)
+  end
 end
