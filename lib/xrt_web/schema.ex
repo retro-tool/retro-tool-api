@@ -7,13 +7,16 @@ defmodule XrtWeb.Schema do
 
   import_types(XrtWeb.Types.User)
   import_types(XrtWeb.Types.Retro)
+  import_types(XrtWeb.Types.Stats)
 
   import_types(XrtWeb.Schemas.Queries.User)
   import_types(XrtWeb.Schemas.Queries.Retro)
+  import_types(XrtWeb.Schemas.Queries.Stats)
 
   query do
     import_fields(:user_queries)
     import_fields(:retro_queries)
+    import_fields(:stats_queries)
   end
 
   import_types(XrtWeb.Schemas.Mutations.Retro)
