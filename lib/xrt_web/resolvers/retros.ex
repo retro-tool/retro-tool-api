@@ -34,27 +34,6 @@ defmodule XrtWeb.Resolvers.Retros do
     |> check_password(password)
   end
 
-  defp do_find_retro(%{slug: slug, previous_retro_id: previous_retro_id})
-       when not is_nil(previous_retro_id) do
-    Retros.find_or_create_by_slug(slug, previous_retro_id: previous_retro_id)
-  end
-
-  defp do_find_retro(%{slug: slug}) do
-    Retros.find_or_create_by_slug(slug)
-  end
-
-  defp check_password({:ok, retro}, password) do
-    if Retros.correct_password?(retro, password) do
-      {:ok, retro}
-    else
-      {:error, Errors.error(:unauthorized, "This retro is protected by a password")}
-    end
-  end
-
-  defp check_password(result, _) do
-    result
-  end
-
   @spec update_retro(any(), %{slug: Retro.slug(), input: %{password: String.t()}}, any()) ::
           {:ok, Retro.t()} | {:error, any()}
   def update_retro(_parent, %{input: input} = args, _resolution) do
@@ -242,16 +221,65 @@ defmodule XrtWeb.Resolvers.Retros do
 
   @spec retro_updated(RetroItemVote.t() | %{retro_id: Retro.id()} | Retro.t(), any(), any()) ::
           {:ok, Retro.t()}
-  def retro_updated(%RetroItemVote{retro_item_id: retro_item_id}, _args, _resolution) do
-    %RetroItem{retro_id: retro_id} = Xrt.Repo.get(RetroItem, retro_item_id)
-    {:ok, Xrt.Repo.get(Retro, retro_id)}
+  def retro_updated(%RetroItemVote{retro_item_id: retro_item_id}, args, resolution) do
+    RetroItem
+    |> Xrt.Repo.get(retro_item_id)
+    |> retro_updated(args, resolution)
   end
 
-  def retro_updated(%{retro_id: retro_id}, _args, _resolution) do
-    {:ok, Xrt.Repo.get(Xrt.Retros.Retro, retro_id)}
+  def retro_updated(%{retro_id: retro_id}, args, resolution) do
+    retro_id
+    |> Retros.find_retro()
+    |> retro_updated(args, resolution)
   end
 
-  def retro_updated(%Retro{} = retro, _args, _resolution) do
-    {:ok, retro}
+  def retro_updated(%Retro{} = retro, args, _resolution) do
+    {password, _} = Map.pop(args, :password, nil)
+
+    case check_password({:ok, retro}, password) do
+      {:ok, retro} ->
+        {:ok, retro}
+
+      error ->
+        error
+    end
+  end
+
+  @spec subscribe_to_retro_updated(%{slug: Retro.slug()}, any()) ::
+          {:ok, topic: String.t()} | {:error, any()}
+  def subscribe_to_retro_updated(args, _res) do
+    {password, args} = Map.pop(args, :password, nil)
+
+    args
+    |> do_find_retro()
+    |> check_password(password)
+    |> case do
+      {:ok, %Retro{slug: slug}} ->
+        {:ok, topic: slug}
+
+      error ->
+        error
+    end
+  end
+
+  defp do_find_retro(%{slug: slug, previous_retro_id: previous_retro_id})
+       when not is_nil(previous_retro_id) do
+    Retros.find_or_create_by_slug(slug, previous_retro_id: previous_retro_id)
+  end
+
+  defp do_find_retro(%{slug: slug}) do
+    Retros.find_or_create_by_slug(slug)
+  end
+
+  defp check_password({:ok, retro}, password) do
+    if Retros.correct_password?(retro, password) do
+      {:ok, retro}
+    else
+      {:error, Errors.error(:unauthorized, "This retro is protected by a password")}
+    end
+  end
+
+  defp check_password(result, _) do
+    result
   end
 end
