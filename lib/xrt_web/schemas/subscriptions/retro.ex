@@ -10,10 +10,9 @@ defmodule XrtWeb.Schemas.Subscriptions.Retro do
   object :retro_subscriptions do
     field :retro_updated, :retro do
       arg(:slug, non_null(:string))
+      arg(:password, :string)
 
-      config(fn args, _ ->
-        {:ok, topic: args.slug}
-      end)
+      config(&Retros.subscribe_to_retro_updated/2)
 
       trigger(
         [
