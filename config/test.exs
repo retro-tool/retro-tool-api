@@ -11,8 +11,8 @@ config :logger, level: :warn
 
 # Configure your database
 config :retro, Xrt.Repo,
-  username: "postgres",
-  password: "postgres",
-  database: "xrt_test",
-  hostname: "localhost",
+  username: System.get_env("DB_USER") || "postgres",
+  password: System.get_env("DB_PASSWORD") || "postgres",
+  database: System.get_env("DB_NAME") || "xrt_test",
+  hostname: System.get_env("DB_HOST") || "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
