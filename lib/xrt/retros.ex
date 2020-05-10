@@ -52,14 +52,14 @@ defmodule Xrt.Retros do
     Repo.get_by(Retro, previous_retro_id: retro.id)
   end
 
-  @spec find_or_create_by_slug(Retro.slug() | nil, keyword()) ::
+  @spec find_or_create_by_slug(Retro.slug() | nil, map()) ::
           {:ok, Retro.t()} | {:error, any()}
-  def find_or_create_by_slug(slug, options \\ [])
+  def find_or_create_by_slug(slug, options \\ %{})
 
   def find_or_create_by_slug(nil, options) do
     slug =
       options
-      |> Keyword.get(:previous_retro_id)
+      |> Map.get(:previous_retro_id)
       |> find_retro()
       |> case do
         nil ->
@@ -89,10 +89,10 @@ defmodule Xrt.Retros do
     end
   end
 
-  @spec create(Retro.slug(), keyword()) :: {:ok, Retro.t()} | {:error, any()}
-  def create(slug, options \\ []) do
-    previous_retro_id = options |> Keyword.get(:previous_retro_id)
-    password = options |> Keyword.get(:password)
+  @spec create(Retro.slug(), map()) :: {:ok, Retro.t()} | {:error, any()}
+  def create(slug, options \\ %{}) do
+    previous_retro_id = options |> Map.get(:previous_retro_id)
+    password = options |> Map.get(:password)
 
     %Retro{}
     |> Retro.changeset(%{slug: slug, previous_retro_id: previous_retro_id, password: password})
