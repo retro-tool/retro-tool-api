@@ -27,7 +27,7 @@ defmodule XrtWeb.Resolvers.Retros do
         ) ::
           {:ok, Retro.t()} | {:error, any()}
   def find_retro(_parent, args, _resolution) do
-    {password, args} = Map.pop(args, :password, nil)
+    password = Map.get(args, :password, nil)
 
     args
     |> find_retro_from_args()
@@ -262,13 +262,8 @@ defmodule XrtWeb.Resolvers.Retros do
     end
   end
 
-  defp find_retro_from_args(%{slug: slug, previous_retro_id: previous_retro_id})
-       when not is_nil(previous_retro_id) do
-    Retros.find_or_create_by_slug(slug, previous_retro_id: previous_retro_id)
-  end
-
-  defp find_retro_from_args(%{slug: slug}) do
-    Retros.find_or_create_by_slug(slug)
+  defp find_retro_from_args(%{slug: slug} = args) do
+    Retros.find_or_create_by_slug(slug, args)
   end
 
   defp check_password({:ok, retro}, password) do

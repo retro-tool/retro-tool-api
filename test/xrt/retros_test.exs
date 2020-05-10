@@ -45,7 +45,7 @@ defmodule Xrt.RetrosTest do
         slug = "slug-#{password}"
 
         assert {:ok, %Retro{slug: ^slug, password_hash: password_hash}} =
-                 Retros.create(slug, password: password)
+                 Retros.create(slug, %{password: password})
 
         assert password_hash != nil
       end
@@ -53,13 +53,13 @@ defmodule Xrt.RetrosTest do
 
     property "doesn't create with password shorter than 8" do
       check all(password <- string(:alphanumeric, min_length: 0, max_length: 8)) do
-        assert {:error, _} = Retros.create("slug", password: password)
+        assert {:error, _} = Retros.create("slug", %{password: password})
       end
     end
 
     property "doesn't create with password longer than 32" do
       check all(password <- string(:alphanumeric, min_length: 32, max_length: 256)) do
-        assert {:error, _} = Retros.create("slug", password: password)
+        assert {:error, _} = Retros.create("slug", %{password: password})
       end
     end
   end
@@ -88,18 +88,17 @@ defmodule Xrt.RetrosTest do
       previous = insert(:retro, slug: "test-slug-1")
 
       assert {:ok, %Retro{slug: "test-slug-2"}} =
-               Retros.find_or_create_by_slug(nil, previous_retro_id: previous.id)
+               Retros.find_or_create_by_slug(nil, %{previous_retro_id: previous.id})
     end
 
-    @tag :focus
     test "creates based on the previous retro with password" do
       previous = insert(:retro, slug: "test-slug-1")
 
       assert {:ok, %Retro{slug: "test-slug-2", password_hash: password_hash}} =
-               Retros.find_or_create_by_slug(nil,
+               Retros.find_or_create_by_slug(nil, %{
                  previous_retro_id: previous.id,
                  password: "password"
-               )
+               })
 
       assert password_hash ==
                <<106, 89, 90, 204, 15, 70, 213, 177, 17, 227, 44, 209, 112, 120, 137, 178, 85,

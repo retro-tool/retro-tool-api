@@ -112,6 +112,15 @@ defmodule XrtWeb.Schemas.Queries.RetroTest do
       }
     """
 
+    test "it creates a retro with the password", %{conn: conn} do
+      conn
+      |> run(@query, %{slug: "super-slug", password: "new-password"})
+
+      retro = Xrt.Retros.find_retro("super-slug")
+
+      assert retro.password_hash != nil
+    end
+
     test "it returns the retro with the correct password", %{conn: conn} do
       retro = insert(:retro, password_hash: Retro.encrypt_password("super-secure-password"))
 
