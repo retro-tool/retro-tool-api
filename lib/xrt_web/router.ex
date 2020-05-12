@@ -1,6 +1,9 @@
 defmodule XrtWeb.Router do
   use XrtWeb, :router
 
+  use Plug.ErrorHandler
+  use Sentry.Plug
+
   import Phoenix.LiveDashboard.Router
 
   pipeline :browser do
