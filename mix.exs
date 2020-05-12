@@ -71,7 +71,8 @@ defmodule Xrt.MixProject do
       {:basic_auth, "~> 2.2"},
       {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},
       {:hammer, "~> 6.0"},
-      {:hammer_plug, "~> 2.1"}
+      {:hammer_plug, "~> 2.1"},
+      {:sentry, "~> 7.0"}
     ]
   end
 

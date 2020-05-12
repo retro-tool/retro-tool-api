@@ -20,3 +20,7 @@ config :retro,
     password: System.get_env("DASHBOARD_PASSWORD"),
     realm: System.get_env("DASHBOARD_REALM")
   ]
+
+config :sentry,
+  dsn: System.get_env("SENTRY_DSN"),
+  environment_name: System.get_env("SENTRY_ENVIRONMENT"),
