@@ -8,30 +8,17 @@ defmodule XrtWeb.EndpointTest do
     }
     """
     test "only allows max of 10 requests each 10 seconds" do
-      conn =
-        build_conn()
+      conn = build_conn()
+
+      Enum.each(1..50, fn _ ->
+        conn
         |> run(@query)
         |> assert_success()
-        |> run(@query)
-        |> assert_success()
-        |> run(@query)
-        |> assert_success()
-        |> run(@query)
-        |> assert_success()
-        |> run(@query)
-        |> assert_success()
-        |> run(@query)
-        |> assert_success()
-        |> run(@query)
-        |> assert_success()
-        |> run(@query)
-        |> assert_success()
-        |> run(@query)
-        |> assert_success()
-        |> run(@query)
-        |> assert_success()
-        |> run(@query)
-        |> assert_rate_limited()
+      end)
+
+      conn
+      |> run(@query)
+      |> assert_rate_limited()
 
       :timer.sleep(10_000)
 

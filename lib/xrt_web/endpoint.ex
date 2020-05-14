@@ -10,7 +10,7 @@ defmodule XrtWeb.Endpoint do
   socket "/live", Phoenix.LiveView.Socket
 
   plug Hammer.Plug,
-    rate_limit: {"api:request", 10_000, 10},
+    rate_limit: {"api:request", 10_000, 50},
     by: :ip
 
   # Serve at "/" the static files from "priv/static" directory.
