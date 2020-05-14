@@ -29,7 +29,9 @@ jobs:
       - run: dockerize -wait tcp://localhost:5432 -timeout 1m
       - run: mix ecto.migrate
       - run: mix credo
-      - run: MIX_ENV=dev mix dialyzer --plt
+      - run:
+          command: MIX_ENV=dev mix dialyzer --plt
+          no_output_timeout: 20m
       - run: mix test
       - save_cache:
           key: v1-dependency-cache-{{ checksum "mix.lock" }}
