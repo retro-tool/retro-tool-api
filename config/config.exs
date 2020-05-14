@@ -19,17 +19,9 @@ config :retro, XrtWeb.Endpoint,
   live_view: [signing_salt: "SALT"]
 
 # Configures Elixir's Logger
-config :logger,
-  backends: [:console, Sentry.LoggerBackend]
-
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
-
-config :sentry,
-  included_environments: ["prod"],
-  enable_source_code_context: true,
-  root_source_code_path: File.cwd!()
 
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason

@@ -1,7 +1,6 @@
 defmodule XrtWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :retro
   use Absinthe.Phoenix.Endpoint
-  use Sentry.Phoenix.Endpoint
 
   socket "/socket", XrtWeb.UserSocket,
     websocket: true,
