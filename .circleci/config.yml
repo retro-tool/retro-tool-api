@@ -30,7 +30,7 @@ jobs:
       - run: mix ecto.migrate
       - run: mix credo
       - run:
-          command: MIX_ENV=dev mix dialyzer --plt
+          command: MIX_ENV=dev mix dialyzer
           no_output_timeout: 20m
       - run: mix test
       - save_cache:
