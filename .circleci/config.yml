@@ -1,6 +1,28 @@
-version: 2
+version: 2.1
+
+orbs:
+  slack: circleci/slack@3.4.2
+
+workflows:
+  version: 2
+
+  test-and-build:
+    jobs:
+      - test
+      - build:
+          context: docker-login
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - master
+      - notify_build:
+          requires:
+            - build
+
 jobs:
-  build:
+  test:
     parallelism: 1
     docker:
       - image: circleci/elixir:1.10
@@ -39,3 +61,28 @@ jobs:
             - _build
             - deps
             - ~/.mix
+  build:
+    docker:
+      - image: docker:17.05.0-ce-git
+    working_directory: /app
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Build Docker image
+          command: docker build -t retrotool/api:$CIRCLE_SHA1 -t retrotool/api:latest .
+      - run:
+          name: Login to DockerHub
+          command: docker login -u="$DOCKER_USER" -p="$DOCKER_PASSWORD"
+      - run:
+          name: Push commit image to DockerHub
+          command: docker push retrotool/api:$CIRCLE_SHA1
+      - run:
+          name: Push latest image to DockerHub
+          command: docker push retrotool/api:latest
+  notify_build:
+    docker:
+      - image: circleci/node:latest
+    steps:
+      - slack/notify:
+          message: ":rocket: Docker image built -> retrotool/api:latest"
