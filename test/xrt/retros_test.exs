@@ -337,34 +337,4 @@ defmodule Xrt.RetrosTest do
       assert actual == nil
     end
   end
-
-  describe "votes_left_for/2" do
-    @user_uuid "test_uuid"
-
-    setup do
-      retro = insert(:retro)
-
-      retro_item = insert(:retro_item, retro: retro)
-
-      {:ok, %{retro: retro, retro_item: retro_item}}
-    end
-
-    test "returns the remaining votes for the user", %{retro: retro, retro_item: retro_item} do
-      assert Retros.votes_left_for(retro, @user_uuid) == 20
-
-      insert(:retro_item_vote, retro_item: retro_item, user_uuid: @user_uuid)
-
-      assert Retros.votes_left_for(retro, @user_uuid) == 19
-
-      other_retro_item = insert(:retro_item, retro: retro)
-      insert(:retro_item_vote, retro_item: other_retro_item, user_uuid: @user_uuid)
-
-      assert Retros.votes_left_for(retro, @user_uuid) == 18
-
-      item_for_other_retro = insert(:retro_item)
-      insert(:retro_item_vote, retro_item: item_for_other_retro, user_uuid: @user_uuid)
-
-      assert Retros.votes_left_for(retro, @user_uuid) == 18
-    end
-  end
 end

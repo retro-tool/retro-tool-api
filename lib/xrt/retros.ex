@@ -237,18 +237,6 @@ defmodule Xrt.Retros do
     StatusMachine.transition_to_next_step(retro)
   end
 
-  @spec votes_left_for(Retro.t(), String.t()) :: integer()
-  @max_votes 20
-  def votes_left_for(%Retro{id: retro_id}, user_uuid) do
-    query =
-      from v in RetroItemVote,
-        join: i in RetroItem,
-        where: i.id == v.retro_item_id and i.retro_id == ^retro_id and v.user_uuid == ^user_uuid,
-        select: count()
-
-    @max_votes - Repo.one(query)
-  end
-
   @spec count() :: integer()
   def count do
     Repo.aggregate(Retro, :count)

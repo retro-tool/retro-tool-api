@@ -10,7 +10,7 @@ defmodule XrtWeb.Schemas.Queries.User do
   object :user_queries do
     @desc "Get the current user"
     field :current_user, :user do
-      arg(:retro_slug, non_null(:string))
+      arg(:retro_slug, :string)
 
       resolve(&Users.current_user/3)
     end
