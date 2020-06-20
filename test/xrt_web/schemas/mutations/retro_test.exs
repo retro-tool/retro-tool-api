@@ -315,6 +315,159 @@ defmodule XrtWeb.Schemas.Mutations.RetroTest do
     end
   end
 
+  describe "transitionToReviewStep" do
+    @query """
+      mutation transitionToReviewStep($slug: String!) {
+        transitionToReviewStep(slug: $slug) {
+          status
+        }
+      }
+    """
+
+    test "transitions retro to review state when it's in initial state", %{conn: conn} do
+      retro = insert(:retro, status: :initial)
+
+      result =
+        conn
+        |> run(@query, %{slug: retro.slug})
+        |> query_result()
+
+      assert result == %{
+               "data" => %{
+                 "transitionToReviewStep" => %{
+                   "status" => "review"
+                 }
+               }
+             }
+    end
+
+    [:review, :actions, :final]
+    |> Enum.each(fn status ->
+      test "returns 403 when retro is in #{status} step", %{conn: conn} do
+        retro = insert(:retro, status: unquote(status))
+
+        result =
+          conn
+          |> run(@query, %{slug: retro.slug})
+          |> query_result()
+
+        assert %{
+                 "data" => %{},
+                 "errors" => [
+                   %{
+                     "extensions" => %{"code" => "FORBIDDEN", "context" => []},
+                     "locations" => _,
+                     "message" => "This retro can't transition to that step",
+                     "path" => ["transitionToReviewStep"]
+                   }
+                 ]
+               } = result
+      end
+    end)
+  end
+
+  describe "transitionToActionsStep" do
+    @query """
+      mutation transitionToActionsStep($slug: String!) {
+        transitionToActionsStep(slug: $slug) {
+          status
+        }
+      }
+    """
+
+    test "transitions retro to actions state when it's in review state", %{conn: conn} do
+      retro = insert(:retro, status: :review)
+
+      result =
+        conn
+        |> run(@query, %{slug: retro.slug})
+        |> query_result()
+
+      assert result == %{
+               "data" => %{
+                 "transitionToActionsStep" => %{
+                   "status" => "actions"
+                 }
+               }
+             }
+    end
+
+    [:initial, :actions, :final]
+    |> Enum.each(fn status ->
+      test "returns 403 when retro is in #{status} step", %{conn: conn} do
+        retro = insert(:retro, status: unquote(status))
+
+        result =
+          conn
+          |> run(@query, %{slug: retro.slug})
+          |> query_result()
+
+        assert %{
+                 "data" => %{},
+                 "errors" => [
+                   %{
+                     "extensions" => %{"code" => "FORBIDDEN", "context" => []},
+                     "locations" => _,
+                     "message" => "This retro can't transition to that step",
+                     "path" => ["transitionToActionsStep"]
+                   }
+                 ]
+               } = result
+      end
+    end)
+  end
+
+  describe "transitionToFinalStep" do
+    @query """
+      mutation transitionToFinalStep($slug: String!) {
+        transitionToFinalStep(slug: $slug) {
+          status
+        }
+      }
+    """
+
+    test "transitions retro to final state when it's in actions state", %{conn: conn} do
+      retro = insert(:retro, status: :actions)
+
+      result =
+        conn
+        |> run(@query, %{slug: retro.slug})
+        |> query_result()
+
+      assert result == %{
+               "data" => %{
+                 "transitionToFinalStep" => %{
+                   "status" => "final"
+                 }
+               }
+             }
+    end
+
+    [:initial, :review, :final]
+    |> Enum.each(fn status ->
+      test "returns 403 when retro is in #{status} step", %{conn: conn} do
+        retro = insert(:retro, status: unquote(status))
+
+        result =
+          conn
+          |> run(@query, %{slug: retro.slug})
+          |> query_result()
+
+        assert %{
+                 "data" => %{},
+                 "errors" => [
+                   %{
+                     "extensions" => %{"code" => "FORBIDDEN", "context" => []},
+                     "locations" => _,
+                     "message" => "This retro can't transition to that step",
+                     "path" => ["transitionToFinalStep"]
+                   }
+                 ]
+               } = result
+      end
+    end)
+  end
+
   describe "combineItems" do
     @query """
       mutation combineItems($parent_id: String!, $child_id: String!) {
