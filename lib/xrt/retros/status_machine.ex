@@ -26,7 +26,8 @@ defmodule Xrt.Retros.StatusMachine do
     end
   end
 
-  defp find_next_step(%Retro{status: status}) do
+  @spec find_next_step(Retro.t()) :: :review | :actions | :final | {:error, atom()}
+  def find_next_step(%Retro{status: status}) do
     Map.get(@status_transitions, status, {:error, status})
   end
 end

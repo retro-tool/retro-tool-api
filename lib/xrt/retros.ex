@@ -237,6 +237,17 @@ defmodule Xrt.Retros do
     StatusMachine.transition_to_next_step(retro)
   end
 
+  @spec transition_to_step(Retro.t(), atom()) :: {:ok, Retro.t()} | {:error, any()}
+  def transition_to_step(retro, step) do
+    case StatusMachine.find_next_step(retro) do
+      ^step ->
+        transition_to_next_step(retro)
+
+      _ ->
+        {:error, :forbidden}
+    end
+  end
+
   @spec count() :: integer()
   def count do
     Repo.aggregate(Retro, :count)

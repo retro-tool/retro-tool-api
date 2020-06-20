@@ -95,9 +95,32 @@ defmodule XrtWeb.Schemas.Mutations.Retro do
 
     @desc "Transitions retro to the next step"
     field :next_step, :retro do
+      deprecate("Use step-specific mutations instead")
+
       arg(:slug, non_null(:string))
 
       resolve(Errors.handle_errors(&Retros.next_step/3))
+    end
+
+    @desc "Transitions retro to the review step"
+    field :transition_to_review_step, :retro do
+      arg(:slug, non_null(:string))
+
+      resolve(Errors.handle_errors(&Retros.transition_to_review_step/3))
+    end
+
+    @desc "Transitions retro to the actions step"
+    field :transition_to_actions_step, :retro do
+      arg(:slug, non_null(:string))
+
+      resolve(Errors.handle_errors(&Retros.transition_to_actions_step/3))
+    end
+
+    @desc "Transitions retro to the final step"
+    field :transition_to_final_step, :retro do
+      arg(:slug, non_null(:string))
+
+      resolve(Errors.handle_errors(&Retros.transition_to_final_step/3))
     end
   end
 end

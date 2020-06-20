@@ -197,6 +197,37 @@ defmodule XrtWeb.Resolvers.Retros do
     |> Retros.transition_to_next_step()
   end
 
+  @spec transition_to_review_step(any(), %{slug: Retro.slug()}, any()) ::
+          {:ok, Retro.t()} | {:error, any()}
+  def transition_to_review_step(_parent, %{slug: slug}, _) do
+    transition_to_step(slug, :review)
+  end
+
+  @spec transition_to_actions_step(any(), %{slug: Retro.slug()}, any()) ::
+          {:ok, Retro.t()} | {:error, any()}
+  def transition_to_actions_step(_parent, %{slug: slug}, _) do
+    transition_to_step(slug, :actions)
+  end
+
+  @spec transition_to_final_step(any(), %{slug: Retro.slug()}, any()) ::
+          {:ok, Retro.t()} | {:error, any()}
+  def transition_to_final_step(_parent, %{slug: slug}, _) do
+    transition_to_step(slug, :final)
+  end
+
+  defp transition_to_step(slug, step) do
+    slug
+    |> Retros.find_retro()
+    |> Retros.transition_to_step(step)
+    |> case do
+      {:ok, retro} ->
+        {:ok, retro}
+
+      {:error, :forbidden} ->
+        {:error, Errors.error(:forbidden, "This retro can't transition to that step")}
+    end
+  end
+
   @spec retro_updated_trigger(
           %{slug: Retro.slug()}
           | %{retro_item_id: RetroItem.id()}
