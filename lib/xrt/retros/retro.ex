@@ -12,7 +12,6 @@ defmodule Xrt.Retros.Retro do
           slug: slug() | nil,
           status: status() | nil,
           previous_retro_id: id() | nil,
-          password: String.t() | nil,
           password_hash: binary() | nil
         }
 
@@ -27,7 +26,6 @@ defmodule Xrt.Retros.Retro do
   schema "retros" do
     field :slug, :string
     field :status, StatusEnum, default: :initial
-    field :password, :string, virtual: true
     field :password_hash, :binary
     belongs_to :previous_retro, Xrt.Retros.Retro
     timestamps()
@@ -36,33 +34,39 @@ defmodule Xrt.Retros.Retro do
   @spec changeset(t(), map()) :: Ecto.Changeset.t()
   def changeset(struct, params \\ %{}) do
     struct
-    |> Changeset.cast(params, [:slug, :status, :previous_retro_id, :password, :password_hash])
+    |> Changeset.cast(params_encrypt_password(params), [
+      :slug,
+      :status,
+      :previous_retro_id,
+      :password_hash
+    ])
     |> Changeset.validate_required([:slug])
     |> Changeset.unique_constraint(:slug)
     |> Changeset.validate_length(:slug, min: 8, max: 64)
-    |> changeset_encrypt_password()
   end
 
   @spec update_changeset(t(), map()) :: Ecto.Changeset.t()
   def update_changeset(struct, params) do
-    struct
-    |> Changeset.cast(params, [:password, :password_hash])
-    |> changeset_encrypt_password()
+    Changeset.cast(struct, params_encrypt_password(params), [:password_hash])
   end
 
   @spec encrypt_password(String.t()) :: binary()
+  def encrypt_password(nil) do
+    nil
+  end
+
   def encrypt_password(password) do
     :crypto.hash(:sha256, password <> "SALT")
   end
 
-  defp changeset_encrypt_password(%Ecto.Changeset{valid?: false} = changeset), do: changeset
-
-  defp changeset_encrypt_password(%Ecto.Changeset{changes: %{password: password}} = changeset)
-       when not is_nil(password) do
-    encrypted_password = encrypt_password(password)
-
-    Changeset.put_change(changeset, :password_hash, encrypted_password)
+  defp params_encrypt_password(%{password: nil} = params) do
+    Map.put(params, :password_hash, nil)
   end
 
-  defp changeset_encrypt_password(changeset), do: changeset
+  defp params_encrypt_password(%{password: password} = params) do
+    Map.put(params, :password_hash, encrypt_password(password))
+  end
+
+  defp params_encrypt_password(changeset),
+    do: changeset
 end
