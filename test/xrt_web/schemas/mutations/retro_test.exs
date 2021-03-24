@@ -75,6 +75,30 @@ defmodule XrtWeb.Schemas.Mutations.RetroTest do
       assert %{password_hash: ^password_hash} = Repo.get(Retro, retro.id)
     end
 
+    @tag :focus
+    test "allows to remove password with correct password", %{conn: conn} do
+      retro = insert(:retro, password_hash: Retro.encrypt_password("old-password"))
+
+      result =
+        conn
+        |> run(@query_with_password, %{
+          slug: retro.slug,
+          password: "old-password",
+          input: %{password: nil}
+        })
+        |> query_result()
+
+      assert result == %{
+               "data" => %{
+                 "updateRetro" => %{
+                   "slug" => retro.slug
+                 }
+               }
+             }
+
+      assert %{password_hash: nil} = Repo.get(Retro, retro.id)
+    end
+
     test "returns unauthorized error with wrong password", %{conn: conn} do
       retro = insert(:retro, password_hash: Retro.encrypt_password("old-password"))
       new_password = "new-password"

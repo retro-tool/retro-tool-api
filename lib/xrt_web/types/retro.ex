@@ -44,7 +44,7 @@ defmodule XrtWeb.Types.Retro do
   end
 
   input_object :update_retro_input do
-    field :password, non_null(:string)
+    field :password, :string
   end
 
   object :retro_item do
