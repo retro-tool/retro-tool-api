@@ -10,7 +10,8 @@ config :retro, Xrt.Repo,
   password: System.get_env("DB_PASSWORD"),
   database: System.get_env("DB_NAME"),
   hostname: System.get_env("DB_HOST"),
-  pool_size: 15
+  pool_size: 15,
+  queue_target: 500
 
 config :retro, XrtWeb.Endpoint, live_view: [signing_salt: System.get_env("SECRET_SALT")]
 
