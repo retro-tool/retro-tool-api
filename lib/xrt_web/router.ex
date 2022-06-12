@@ -33,6 +33,10 @@ defmodule XrtWeb.Router do
   end
 
   scope "/" do
+    get "/healthz", XrtWeb.SystemController, :index
+  end
+
+  scope "/" do
     pipe_through [:browser, :admins_only]
 
     live_dashboard "/api/dashboard", metrics: XrtWeb.Monitoring.Dashboard
