@@ -7,7 +7,7 @@ defmodule Xrt.MixProject do
       version: "0.1.0",
       elixir: "~> 1.14",
       elixirc_paths: elixirc_paths(Mix.env()),
-      compilers: [:phoenix] ++ Mix.compilers(),
+      compilers: Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps()
@@ -43,7 +43,7 @@ defmodule Xrt.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.6.16"},
+      {:phoenix, "~> 1.7.14"},
       {:phoenix_pubsub, "~> 2.0"},
       {:phoenix_ecto, "~> 4.4"},
       {:ecto_sql, "~> 3.4"},

@@ -130,7 +130,9 @@ defmodule XrtWeb.Schemas.Subscriptions.RetroTest do
 
     test "can't subscribe with the wrong password", %{socket: socket, retro: retro} do
       ref =
-        push_doc(socket, @subscription, variables: %{slug: retro.slug, password: "wrong-password"})
+        push_doc(socket, @subscription,
+          variables: %{slug: retro.slug, password: "wrong-password"}
+        )
 
       assert_reply(ref, :error, %{
         errors: [%{message: %{extensions: %{code: "UNAUTHORIZED"}}}]
