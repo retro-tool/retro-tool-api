@@ -43,16 +43,17 @@ defmodule Xrt.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.5.14"},
+      {:phoenix, "~> 1.6.16"},
       {:phoenix_pubsub, "~> 2.0"},
       {:phoenix_ecto, "~> 4.4"},
       {:ecto_sql, "~> 3.4"},
       {:postgrex, ">= 0.0.0"},
-      {:phoenix_html, "~> 2.11"},
+      {:phoenix_html, "~> 4.1"},
+      {:phoenix_html_helpers, "~> 1.0"},
       {:phoenix_live_reload, "~> 1.5", only: :dev},
       {:gettext, "~> 0.11"},
-      {:jason, "~> 1.0"},
-      {:plug_cowboy, "~> 1.0"},
+      {:jason, "~> 1.1"},
+      {:plug_cowboy, "~> 2.3"},
       {:absinthe, "~> 1.5.0"},
       {:absinthe_phoenix, "~> 2.0.0"},
       {:absinthe_plug, "~> 1.5.0"},
@@ -60,18 +61,19 @@ defmodule Xrt.MixProject do
       {:elixir_uuid, "~> 1.2"},
       {:ecto_enum, "~> 1.1"},
       {:ex_machina, "~> 2.2"},
-      {:stream_data, "~> 0.1", only: :test},
+      {:stream_data, "~> 1.1", only: :test},
       {:distillery, "~> 2.0", runtime: false},
       {:mix_test_watch, "~> 1.0", only: :dev, runtime: false},
       {:credo, "~> 1.3", only: [:dev, :test], runtime: false},
-      {:phoenix_live_dashboard, "~> 0.2"},
+      {:phoenix_live_dashboard, "~> 0.7"},
       {:telemetry_poller, "~> 0.4"},
       {:telemetry_metrics, "~> 0.4"},
       {:basic_auth, "~> 2.2"},
       {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},
       {:hammer, "~> 6.0"},
       {:hammer_plug, "~> 2.1"},
-      {:sentry, "~> 7.0"}
+      {:sentry, "~> 8.0"},
+      {:hackney, "~> 1.8"}
     ]
   end
 

@@ -1,7 +1,7 @@
 defmodule XrtWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :retro
   use Absinthe.Phoenix.Endpoint
-  use Sentry.Phoenix.Endpoint
+  use Sentry.PlugCapture
 
   socket "/socket", XrtWeb.UserSocket,
     websocket: true,
@@ -49,6 +49,8 @@ defmodule XrtWeb.Endpoint do
     store: :cookie,
     key: "_xrt_key",
     signing_salt: "gCYs3blT"
+
+  plug Sentry.PlugContext
 
   plug XrtWeb.Router
 end
