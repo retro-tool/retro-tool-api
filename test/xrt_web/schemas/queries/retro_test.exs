@@ -1,7 +1,6 @@
 defmodule XrtWeb.Schemas.Queries.RetroTest do
   use XrtWeb.GraphqlCase
 
-  import Plug.Test
   import Xrt.Factory
 
   alias Xrt.Repo
