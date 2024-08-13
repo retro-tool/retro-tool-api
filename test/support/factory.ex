@@ -3,12 +3,14 @@ defmodule Xrt.Factory do
 
   use ExMachina.Ecto, repo: Xrt.Repo
 
+  @spec retro_factory() :: Xrt.Retros.Retro.t()
   def retro_factory do
     %Xrt.Retros.Retro{
       slug: sequence(:slug, &"test_slug-#{&1}")
     }
   end
 
+  @spec retro_item_factory() :: Xrt.Retros.RetroItem.t()
   def retro_item_factory do
     %Xrt.Retros.RetroItem{
       title: "Sample title",
@@ -19,6 +21,7 @@ defmodule Xrt.Factory do
     }
   end
 
+  @spec action_item_factory() :: Xrt.Retros.ActionItem.t()
   def action_item_factory do
     %Xrt.Retros.ActionItem{
       title: "Sample title",
@@ -27,6 +30,7 @@ defmodule Xrt.Factory do
     }
   end
 
+  @spec retro_item_vote_factory() :: Xrt.Retros.RetroItemVote.t()
   def retro_item_vote_factory do
     %Xrt.Retros.RetroItemVote{
       retro_item: build(:retro_item),

@@ -19,6 +19,7 @@ defmodule XrtWeb.Monitoring.Dashboard do
     Supervisor.init(children, strategy: :one_for_one)
   end
 
+  @spec metrics() :: list()
   def metrics do
     [
       # VM Metrics
