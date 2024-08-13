@@ -32,7 +32,7 @@ jobs:
   test:
     parallelism: 1
     docker:
-      - image: circleci/elixir:1.10
+      - image: cimg/elixir:1.17.2-erlang-26.2.1-node
         environment:
           MIX_ENV: test
           DB_HOST: localhost
