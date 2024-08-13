@@ -54,7 +54,7 @@ defmodule Xrt.MixProject do
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.1"},
       {:plug_cowboy, "~> 2.3"},
-      {:absinthe, "~> 1.5.0"},
+      {:absinthe, "~> 1.7.8"},
       {:absinthe_phoenix, "~> 2.0.0"},
       {:absinthe_plug, "~> 1.5.0"},
       {:poison, "~> 3.0"},
