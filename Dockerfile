@@ -1,5 +1,5 @@
 # ---- Build Stage ----
-FROM elixir:1.10-alpine AS builder
+FROM elixir:1.15-alpine AS builder
 
 # Set environment variables for building the application
 ENV MIX_ENV=prod \
@@ -32,7 +32,7 @@ FROM alpine AS runtime
 ENV LANG=C.UTF-8
 
 # Install openssl
-RUN apk update && apk add openssl ncurses-libs
+RUN apk update && apk add openssl ncurses-libs libstdc++
 
 # Copy over the build artifact from the previous step
 COPY --from=builder /app/_build .
