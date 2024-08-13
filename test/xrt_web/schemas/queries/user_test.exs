@@ -23,6 +23,8 @@ defmodule XrtWeb.Schemas.Queries.UserTest do
                  }
                }
              } = result
+
+      assert uuid != nil
     end
   end
 

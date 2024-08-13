@@ -16,6 +16,7 @@ defmodule Xrt.Application do
       XrtWeb.Monitoring.Dashboard,
       # Start the endpoint when the application starts
       XrtWeb.Endpoint,
+      {Phoenix.PubSub, [name: Xrt.PubSub, adapter: Phoenix.PubSub.PG2]},
       # Start the absinthe subsctiption server when the application starts
       absinthe_subscriptions(XrtWeb.Endpoint)
     ]

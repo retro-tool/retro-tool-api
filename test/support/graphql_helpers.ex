@@ -3,7 +3,7 @@ defmodule XrtWeb.GraphqlHelpers do
   Helpers for Graphql related tests
   """
 
-  use Phoenix.ConnTest
+  import Phoenix.ConnTest
 
   @endpoint XrtWeb.Endpoint
 

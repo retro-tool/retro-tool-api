@@ -1,6 +1,6 @@
 defmodule XrtWeb.Schemas.Subscriptions.RetroTest do
   use XrtWeb.SubscriptionCase
-  use Phoenix.ConnTest
+  import Phoenix.ConnTest
 
   import Xrt.Factory
   import XrtWeb.GraphqlHelpers
@@ -57,7 +57,7 @@ defmodule XrtWeb.Schemas.Subscriptions.RetroTest do
       retro: retro
     } do
       ref = push_doc(socket, @subscription, variables: %{slug: retro.slug})
-      assert_reply(ref, :ok, %{subscriptionId: subscription_id})
+      assert_reply(ref, :ok, %{subscriptionId: __subscription_id})
 
       item_id = add_item(retro)
       retro_slug = retro.slug
@@ -80,7 +80,7 @@ defmodule XrtWeb.Schemas.Subscriptions.RetroTest do
     } do
       other_retro = insert(:retro)
       ref = push_doc(socket, @subscription, variables: %{slug: retro.slug})
-      assert_reply(ref, :ok, %{subscriptionId: subscription_id})
+      assert_reply(ref, :ok, %{subscriptionId: _subscription_id})
 
       add_item(other_retro)
 
@@ -113,7 +113,7 @@ defmodule XrtWeb.Schemas.Subscriptions.RetroTest do
       retro: retro
     } do
       ref = push_doc(socket, @subscription, variables: %{slug: retro.slug, password: "password"})
-      assert_reply(ref, :ok, %{subscriptionId: subscription_id})
+      assert_reply(ref, :ok, %{subscriptionId: _subscription_id})
 
       item_id = add_item(retro)
 
@@ -142,7 +142,7 @@ defmodule XrtWeb.Schemas.Subscriptions.RetroTest do
       retro: retro
     } do
       ref = push_doc(socket, @subscription, variables: %{slug: retro.slug, password: "password"})
-      assert_reply(ref, :ok, %{subscriptionId: subscription_id})
+      assert_reply(ref, :ok, %{subscriptionId: _subscription_id})
 
       add_item(retro)
       assert_push("subscription:data", %{})
