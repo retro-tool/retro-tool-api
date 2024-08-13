@@ -20,7 +20,7 @@ defmodule Xrt.RetrosTest do
 
     property "creates with slug length between 8 and 32" do
       check all(slug <- string(:alphanumeric, min_length: 8, max_length: 64)) do
-        assert {:ok, %Retro{slug: slug}} = Retros.create(slug)
+        assert {:ok, %Retro{slug: ^slug}} = Retros.create(slug)
       end
     end
 
@@ -75,7 +75,7 @@ defmodule Xrt.RetrosTest do
     test "returns the existing retro if found" do
       %{id: id, slug: slug} = insert(:retro)
 
-      assert {:ok, %Retro{id: ^id, slug: slug}} = Retros.find_or_create_by_slug(slug)
+      assert {:ok, %Retro{id: ^id, slug: ^slug}} = Retros.find_or_create_by_slug(slug)
     end
 
     test "if slug is nil, generates a random one" do
